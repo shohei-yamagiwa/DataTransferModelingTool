@@ -1,4 +1,4 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -7,8 +7,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import graphicalrefactor.editor.Editor;
-import graphicalrefactor.views.DataTransferModelingTool;
+import application.ApplicationWindow;
+import application.editor.Editor;
 
 public class OpenAction extends AbstractSystemAction {
 	/**
@@ -18,7 +18,7 @@ public class OpenAction extends AbstractSystemAction {
 	
 	private String lastDir = null;
 	
-	public OpenAction(DataTransferModelingTool frame) {
+	public OpenAction(ApplicationWindow frame) {
 		super("Open...", frame);
 	}
 

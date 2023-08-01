@@ -1,4 +1,4 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -8,8 +8,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import graphicalrefactor.editor.Editor;
-import graphicalrefactor.views.DataTransferModelingTool;
+import application.ApplicationWindow;
+import application.editor.Editor;
 
 public class SaveAsAction extends AbstractSystemAction {
 	/**
@@ -19,7 +19,7 @@ public class SaveAsAction extends AbstractSystemAction {
 
 	private String lastDir = null;
 
-	public SaveAsAction(DataTransferModelingTool frame) {
+	public SaveAsAction(ApplicationWindow frame) {
 		super("Save As...", frame);
 	}
 
@@ -71,7 +71,7 @@ public class SaveAsAction extends AbstractSystemAction {
 				
 				// overwriting file
 				editor.save();
-				frame.setTitle(DataTransferModelingTool.title + " - " + fc.getSelectedFile().getAbsolutePath());
+				frame.setTitle(ApplicationWindow.title + " - " + fc.getSelectedFile().getAbsolutePath());
 			}
 		}
 	}

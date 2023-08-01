@@ -1,4 +1,4 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 

@@ -1,9 +1,9 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 
-import graphicalrefactor.editor.Editor;
-import graphicalrefactor.views.DataTransferModelingTool;
+import application.ApplicationWindow;
+import application.editor.Editor;
 
 public class SaveAction extends AbstractSystemAction {
 	/**
@@ -11,7 +11,7 @@ public class SaveAction extends AbstractSystemAction {
 	 */
 	private static final long serialVersionUID = 5660460585305281982L;
 
-	public SaveAction(DataTransferModelingTool frame) {
+	public SaveAction(ApplicationWindow frame) {
 		super("Save", frame);
 	}
 

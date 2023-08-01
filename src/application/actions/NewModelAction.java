@@ -1,9 +1,9 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 
-import graphicalrefactor.editor.Editor;
-import graphicalrefactor.views.DataTransferModelingTool;
+import application.ApplicationWindow;
+import application.editor.Editor;
 
 public class NewModelAction extends AbstractSystemAction {
 	/**
@@ -11,7 +11,7 @@ public class NewModelAction extends AbstractSystemAction {
 	 */
 	private static final long serialVersionUID = 8484493203589724589L;
 
-	public NewModelAction(DataTransferModelingTool frame) {
+	public NewModelAction(ApplicationWindow frame) {
 		super("Model", frame);
 	}
 

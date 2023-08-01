@@ -64,4 +64,8 @@ public class DirectedGraph {
 		edge.getSource().removeOutEdge(edge);
 		edge.getDestination().removeInEdge(edge);
 	}
+	
+	protected void simpleAddEdge(Edge edge) {
+		edges.add(edge);
+	}
 }

@@ -1,4 +1,4 @@
-package graphicalrefactor.editor;
+package application.editor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +20,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxIGraphModel;
+import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxCellState;
@@ -29,8 +30,8 @@ import com.mxgraph.view.mxGraphView;
 
 import algorithms.DataTransferModelAnalyzer;
 import algorithms.Validation;
+import application.layouts.*;
 import code.ast.CompilationUnit;
-import graphicalrefactor.layouts.*;
 import models.Edge;
 import models.EdgeAttribute;
 import models.Node;
@@ -69,26 +70,29 @@ public class Editor {
 	final int PORT_DIAMETER = 8;
 	final int PORT_RADIUS = PORT_DIAMETER / 2;
 
+	protected DataTransferModel model = null;
+	protected mxGraph graph = null;
+	private mxGraphComponent  graphComponent = null;
+
+	protected DataFlowGraph dataFlowGraph = null;
+
 	protected String curFileName = null;
 	protected String curFilePath = null;
 	protected ArrayList<CompilationUnit> codes = null;
 
-	protected DataTransferModel model = null;
-	protected mxGraph graph = null;
-
-	protected DataFlowGraph dataFlowGraph = null;
-
-
-	public Editor(mxGraph graph) {
-		this.graph = graph;
+	public Editor(mxGraphComponent graphComponent) {
+		this.graphComponent = graphComponent;
+		this.graph = graphComponent.getGraph();
+		
+		graphComponent.setCellEditor(new DataTransferModelingCellEditor(graphComponent, this));
 	}
 
 	public mxGraph getGraph() {
 		return graph;
 	}
 
-	public void setGraph(mxGraph graph) {
-		this.graph = graph;
+	public mxGraphComponent getGraphComponent() {
+		return this.graphComponent;
 	}
 
 	public DataTransferModel getModel() {

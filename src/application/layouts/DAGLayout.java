@@ -1,4 +1,4 @@
-package graphicalrefactor.layouts;
+package application.layouts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +20,8 @@ import models.dataConstraintModel.IdentifierTemplate;
 
 public class DAGLayout extends mxGraphLayout {
 
-	public DAGLayout(mxGraph arg0) {
-		super(arg0);
+	public DAGLayout(mxGraph graph) {
+		super(graph);
 	}
 	
 	public void execute(Object parent) {
@@ -48,7 +48,6 @@ public class DAGLayout extends mxGraphLayout {
 				}
 			}
 			
-			// ���בւ�
 			sort(map, 0, false);
 			
 			// layout

@@ -1,7 +1,8 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
-import graphicalrefactor.editor.Editor;
+
+import application.editor.Editor;
 
 public class DAGLayoutAction extends AbstractEditorAction {
 

@@ -1,11 +1,11 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import com.mxgraph.view.mxGraph;
 
-import graphicalrefactor.editor.Editor;
+import application.editor.Editor;
 
 public abstract class AbstractEditorAction extends AbstractAction {
 

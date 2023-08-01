@@ -21,7 +21,7 @@ public class MethodDeclaration extends BodyDeclaration implements IAnnotatable {
 		this(methodName, false);
 	}
 	
-	public MethodDeclaration(String methodName,Type returnType) {
+	public MethodDeclaration(String methodName, Type returnType) {
 		this(methodName, false);
 		this.returnType = returnType;
 	}

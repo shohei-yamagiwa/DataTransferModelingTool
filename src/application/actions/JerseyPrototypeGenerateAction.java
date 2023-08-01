@@ -1,4 +1,4 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
@@ -11,11 +11,11 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 
 import algorithms.*;
+import application.editor.Editor;
 import code.ast.*;
 import generators.DataTransferMethodAnalyzer;
 import generators.JerseyCodeGenerator;
 import generators.JerseyMethodBodyGenerator;
-import graphicalrefactor.editor.Editor;
 import models.algebra.Type;
 import models.dataConstraintModel.IdentifierTemplate;
 import models.dataFlowModel.DataTransferModel;

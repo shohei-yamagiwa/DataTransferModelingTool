@@ -34,12 +34,22 @@ public class TypeDeclaration extends AbstractTypeDeclaration implements IAnnotat
 		methods.add(method);
 	}
 
+	public void removeMethod(MethodDeclaration method) {
+		methods.remove(method);
+	}
+
 	public List<FieldDeclaration> getFields() {
 		return fields;
 	}
 	
 	public List<MethodDeclaration> getMethods() {
 		return methods;
+	}
+
+	public MethodDeclaration createConstructor() {
+		MethodDeclaration constructor = new MethodDeclaration(typeName, true);
+		addMethod(constructor);
+		return constructor;
 	}
 	
 	@Override

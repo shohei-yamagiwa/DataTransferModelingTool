@@ -1,4 +1,4 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -17,8 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import graphicalrefactor.editor.Editor;
-import graphicalrefactor.views.DataTransferModelingTool;
+import application.ApplicationWindow;
+import application.editor.Editor;
 import models.visualModel.FormulaChannelGenerator;
 
 public class NewFormulaChannelAction extends AbstractEditorAction implements ActionListener {

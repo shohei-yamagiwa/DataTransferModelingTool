@@ -1,4 +1,4 @@
-package graphicalrefactor.views;
+package application;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,22 +16,24 @@ import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 
-import graphicalrefactor.editor.Editor;
+import application.editor.DataTransferModelingCellEditor;
+import application.editor.Editor;
 
-public class DataTransferModelingTool extends JFrame {
+public class ApplicationWindow extends JFrame {
 	private static final long serialVersionUID = -8690140317781055614L;
 	public static final String title = "Data Transfer Modeling Tool";
 	
-	private Editor editor;
-	private mxGraph graph;
-	private DataTransferModelingMenuBar menuBar;
-	private mxGraphComponent graphComponent;
+	private Editor editor = null;
+	private mxGraph graph = null;
+	private mxGraphComponent graphComponent = null;
+	
+	private ApplicationMenuBar menuBar = null;
 
-	public DataTransferModelingTool() {
+	public ApplicationWindow() {
 		setTitle(title);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		graph = new mxGraph() {
+		this.graph = new mxGraph() {
 			public boolean isPort(Object cell) {
 				mxGeometry geo = getCellGeometry(cell);
 				
@@ -43,13 +45,10 @@ public class DataTransferModelingTool extends JFrame {
 			}
 		};
 		
-		editor = new Editor(graph);
+		this.graphComponent = new mxGraphComponent(graph);
 		
-		graphComponent = new mxGraphComponent(graph) {			
-			protected mxICellEditor createCellEditor() {
-				return new DataTransferModelingCellEditor(this, editor);
-			}
-		};
+		this.editor = new Editor(graphComponent);
+		
 		graph.getModel().addListener(mxEvent.CHANGE, new mxIEventListener() {
 			public void invoke(Object sender, mxEventObject evt) {
 				List<mxCell> terminals = new ArrayList<>();
@@ -74,7 +73,7 @@ public class DataTransferModelingTool extends JFrame {
 		graph.setAllowDanglingEdges(false);
 		graph.setCellsDisconnectable(true);
 				
-		menuBar = new DataTransferModelingMenuBar(this);
+		menuBar = new ApplicationMenuBar(this);
 		setJMenuBar(menuBar);
 		setSize(870, 640);
 	}

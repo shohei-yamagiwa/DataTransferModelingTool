@@ -1,4 +1,4 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 
@@ -6,7 +6,7 @@ import javax.swing.AbstractAction;
 
 import com.mxgraph.swing.mxGraphComponent;
 
-import graphicalrefactor.editor.Editor;
+import application.editor.Editor;
 
 public class ZoomOutAction extends AbstractViewerAction {
 	/**

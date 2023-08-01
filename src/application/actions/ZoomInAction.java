@@ -1,4 +1,4 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 
@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
 
-import graphicalrefactor.editor.Editor;
+import application.editor.Editor;
 
 public class ZoomInAction extends AbstractViewerAction {
 	/**

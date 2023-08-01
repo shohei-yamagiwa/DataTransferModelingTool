@@ -1,10 +1,10 @@
-package graphicalrefactor.actions;
+package application.actions;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
 
-import graphicalrefactor.editor.Editor;
+import application.editor.Editor;
 import models.dataFlowModel.DataTransferChannelGenerator;
 
 public class NewChannelAction extends AbstractEditorAction {

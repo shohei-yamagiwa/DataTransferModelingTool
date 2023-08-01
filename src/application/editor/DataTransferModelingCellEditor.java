@@ -1,4 +1,4 @@
-package graphicalrefactor.views;
+package application.editor;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,7 +22,6 @@ import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxCellState;
 
-import graphicalrefactor.editor.Editor;
 import models.algebra.Expression;
 import models.dataFlowModel.DataTransferModel;
 import models.dataFlowModel.DataTransferChannelGenerator;

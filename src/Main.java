@@ -1,11 +1,11 @@
 
 
-import graphicalrefactor.views.DataTransferModelingTool;
+import application.ApplicationWindow;
 
 public class Main {
 
 	public static void main(String[] args) {
-		DataTransferModelingTool frame = new DataTransferModelingTool();
+		ApplicationWindow frame = new ApplicationWindow();
 		frame.setVisible(true);
 	}
 
