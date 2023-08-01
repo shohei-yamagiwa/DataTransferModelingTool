@@ -202,12 +202,19 @@ public class Editor {
 			Parser parser = new Parser(new BufferedReader(new FileReader(file)));
 
 			try {	
+				// Parse the .model file.
 				model = parser.doParse();
+				
 				curFilePath = file.getAbsolutePath();
 				curFileName = file.getName();
+				
+				// Analyze the model.
 				if (!Validation.checkUpdateConflict(model)) return null;
 				graph = constructGraph(model);
 				analyzeDataTransferModel(model);
+								
+				// Set DAG layout.
+				setDAGLayout();
 				return model;
 			} catch (ExpectedChannel | ExpectedChannelName | ExpectedLeftCurlyBracket | ExpectedInOrOutOrRefKeyword
 					| ExpectedStateTransition | ExpectedEquals | ExpectedRHSExpression | WrongLHSExpression
