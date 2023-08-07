@@ -269,7 +269,7 @@ public class DataConstraintModel {
 		return channels.get(channelName);
 	}
 	
-	public void setChannel(HashMap<String, Channel> channels) {
+	public void setChannels(HashMap<String, Channel> channels) {
 		this.channels = channels;
 		for (Channel g: channels.values()) {
 			for (ResourcePath id: g.getResources()) {
@@ -289,7 +289,7 @@ public class DataConstraintModel {
 		channels.remove(channelName);
 	}
 	
-	public Collection<Channel> getIOChannel() {
+	public Collection<Channel> getIOChannels() {
 		return ioChannels.values();
 	}
 	

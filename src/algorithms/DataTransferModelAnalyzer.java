@@ -24,7 +24,7 @@ public class DataTransferModelAnalyzer {
 	 */
 	static public DataFlowGraph createDataFlowGraphWithStateStoringAttribute(DataTransferModel model) {
 		DataFlowGraph graph = model.getDataFlowGraph();
-		Collection<Channel> channels = new HashSet<>(model.getIOChannel());
+		Collection<Channel> channels = new HashSet<>(model.getIOChannels());
 		channels.addAll(model.getChannels());
 		for (Channel channel: channels) {
 			for (ChannelMember member: ((DataTransferChannel) channel).getOutputChannelMembers()) {

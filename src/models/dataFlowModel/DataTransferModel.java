@@ -19,7 +19,7 @@ public class DataTransferModel extends DataConstraintModel {
 				}
 			}
 		}
-		for (Channel channelGen: getIOChannel()) {
+		for (Channel channelGen: getIOChannels()) {
 			DataTransferChannel dfChannelGen = (DataTransferChannel)channelGen;
 			Set<ResourcePath> outputResources = dfChannelGen.getOutputResources();
 			for (ResourcePath out: outputResources) {

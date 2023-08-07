@@ -78,7 +78,7 @@ public class SimplifiedDataFlowModelTest {
 		
 		// Check the model.
 		assertEquals(4, model.getResourcePaths().size());
-		assertEquals(1, model.getIOChannel().size());
+		assertEquals(1, model.getIOChannels().size());
 		assertEquals(3, model.getChannels().size());
 		
 		// Extract the resource dependency graph.

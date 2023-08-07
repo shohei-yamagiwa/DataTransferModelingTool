@@ -123,7 +123,7 @@ public class TypeInference {
 		mapComponentTypes.put(DataConstraintModel.typeMap, Arrays.asList(new Type[] { null, null }));
 
 		// 1. Collect type information from the architecture model.
-		Collection<Channel> channels = new HashSet<>(model.getIOChannel());
+		Collection<Channel> channels = new HashSet<>(model.getIOChannels());
 		channels.addAll(model.getChannels());
 		for (Channel c : channels) {
 			for (ChannelMember cm : c.getChannelMembers()) {

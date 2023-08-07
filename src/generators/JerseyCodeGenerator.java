@@ -149,7 +149,7 @@ public class JerseyCodeGenerator {
 //			}
 			
 			// Declare input methods in resources.
-			for (Channel cg : model.getIOChannel()) {
+			for (Channel cg : model.getIOChannels()) {
 				for (ChannelMember cm : ((DataTransferChannel) cg).getOutputChannelMembers()) {
 					if (cm.getResource().equals(rn.getResource())) {
 						Expression message = cm.getStateTransition().getMessageExpression();

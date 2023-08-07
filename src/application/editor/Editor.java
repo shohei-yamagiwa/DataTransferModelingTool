@@ -307,7 +307,7 @@ public class Editor {
 						fileString += "\tnode r " + state.getLabel() + ":" + x + "," + y + "," + w + "," + h + "\n";
 				}
 
-				for (Channel ioC: model.getIOChannel()) {
+				for (Channel ioC: model.getIOChannels()) {
 					if(ioC instanceof Channel && state.getLabel().equals(ioC.getChannelName())) {
 						fileString += "\tnode ioc " + state.getLabel() + ":" + x + "," + y + "," + w + "," + h + "\n";
 					}
@@ -383,7 +383,7 @@ public class Editor {
 				}
 			}
 
-			for (Channel ioChannelGen: model.getIOChannel()) {
+			for (Channel ioChannelGen: model.getIOChannels()) {
 				if (channelsOut.get(ioChannelGen) == null) {
 					Object channel = graph.insertVertex(parent, null, ioChannelGen.getChannelName(), 150, 20, 30, 30); // insert an I/O channel as a vertex
 					mxCell port_out = new mxCell(null, geo2, "shape=ellipse;perimter=ellipsePerimeter");

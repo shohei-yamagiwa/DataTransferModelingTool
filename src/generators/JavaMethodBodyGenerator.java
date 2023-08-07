@@ -295,7 +295,7 @@ public class JavaMethodBodyGenerator {
 	
 	private static Map<DataTransferChannel, Set<ChannelMember>> getIOChannelsAndMembers(ResourceNode resource, DataTransferModel model) {
 		Map<DataTransferChannel, Set<ChannelMember>> ioChannelsAndMembers = new HashMap<>();
-		for (Channel c: model.getIOChannel()) {
+		for (Channel c: model.getIOChannels()) {
 			DataTransferChannel ch = (DataTransferChannel) c;
 			// I/O channel
 			for (ChannelMember out: ch.getOutputChannelMembers()) {
@@ -316,7 +316,7 @@ public class JavaMethodBodyGenerator {
 
 	private static List<MethodDeclaration> getInputMethods(TypeDeclaration type, ResourceNode resource, DataTransferModel model) {
 		List<MethodDeclaration> inputs = new ArrayList<>();
-		for (Channel c: model.getIOChannel()) {
+		for (Channel c: model.getIOChannels()) {
 			DataTransferChannel channel = (DataTransferChannel) c;
 			// I/O channel
 			for (ChannelMember out: channel.getOutputChannelMembers()) {
