@@ -47,11 +47,11 @@ public class NewFormulaChannelAction extends AbstractEditorAction implements Act
 		panel.add(symbolText);
 
 		int r = JOptionPane.showConfirmDialog(
-			null,				// オーナーウィンドウ
-			panel,				// メッセージ
-			"New Formula Channel",			// ウィンドウタイトル
-			JOptionPane.OK_CANCEL_OPTION,	// オプション（ボタンの種類）
-			JOptionPane.QUESTION_MESSAGE);	// メッセージタイプ（アイコンの種類）
+			null,
+			panel,
+			"New Formula Channel",
+			JOptionPane.OK_CANCEL_OPTION,
+			JOptionPane.QUESTION_MESSAGE);
 		
 		String channelName = channelText.getText();
 		String symbol = symbolText.getText();
