@@ -25,10 +25,10 @@ public class UpdateCodeGenerationTest {
 		Symbol sum = new Symbol("sum", 1, Symbol.Type.PREFIX, "stream().mapToInt(x->x).sum", Symbol.Type.METHOD);
 		
 		// resources
-		ResourcePath payment = new ResourcePath("payment", DataConstraintModel.typeInt, 0);	// an identifier template to specify the payment resource
-		ResourcePath loyalty = new ResourcePath("loyalty", DataConstraintModel.typeInt, 0);	// an identifier template to specify the loyalty resource
-		ResourcePath history = new ResourcePath("history", DataConstraintModel.typeList, 0);// an identifier template to specify the payment history resource
-		ResourcePath total = new ResourcePath("total", DataConstraintModel.typeInt, 0);		// an identifier template to specify the total payment resource
+		ResourcePath payment = new ResourcePath("payment", DataConstraintModel.typeInt, 0);	// a resource to specify the payment resource
+		ResourcePath loyalty = new ResourcePath("loyalty", DataConstraintModel.typeInt, 0);	// a resource to specify the loyalty resource
+		ResourcePath history = new ResourcePath("history", DataConstraintModel.typeList, 0);// a resource to specify the payment history resource
+		ResourcePath total = new ResourcePath("total", DataConstraintModel.typeInt, 0);		// a resource to specify the total payment resource
 		
 		// fields in the Java program
 		final Field fPayment = new Field("payment", DataConstraintModel.typeInt);

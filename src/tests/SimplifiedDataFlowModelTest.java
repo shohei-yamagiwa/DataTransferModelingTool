@@ -14,10 +14,10 @@ public class SimplifiedDataFlowModelTest {
 	public void test() {
 		// Construct a data-flow architecture model.
 		DataTransferModel model = new DataTransferModel();
-		ResourcePath payment = new ResourcePath("payment", 0);	// an identifier template to specify the payment resource
-		ResourcePath loyalty = new ResourcePath("loyalty", 0);	// an identifier template to specify the loyalty resource
-		ResourcePath history = new ResourcePath("history", 0);	// an identifier template to specify the payment history resource
-		ResourcePath total = new ResourcePath("total", 0);		// an identifier template to specify the total payment resource
+		ResourcePath payment = new ResourcePath("payment", 0);	// a resource to specify the payment resource
+		ResourcePath loyalty = new ResourcePath("loyalty", 0);	// a resource to specify the loyalty resource
+		ResourcePath history = new ResourcePath("history", 0);	// a resource to specify the payment history resource
+		ResourcePath total = new ResourcePath("total", 0);		// a resource to specify the total payment resource
 		
 		// === cin ===
 		//
