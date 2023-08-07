@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import models.DirectedGraph;
-import models.dataConstraintModel.IdentifierTemplate;
+import models.dataConstraintModel.ResourcePath;
 
 public class DataFlowGraph extends DirectedGraph {
-	protected Map<IdentifierTemplate, ResourceNode> nodeMap = null;
+	protected Map<ResourcePath, ResourceNode> nodeMap = null;
 	
 	public DataFlowGraph() {
 		super();
 		nodeMap = new HashMap<>();
 	}
 	
-	public void addNode(IdentifierTemplate id) {
+	public void addNode(ResourcePath id) {
 		if (nodeMap.get(id) == null) {
 			ResourceNode node = new ResourceNode(id);
 			addNode(node);
@@ -22,7 +22,7 @@ public class DataFlowGraph extends DirectedGraph {
 		}
 	}
 
-	public void addEdge(IdentifierTemplate in, IdentifierTemplate out, DataTransferChannelGenerator dfChannelGen) {
+	public void addEdge(ResourcePath in, ResourcePath out, DataTransferChannel dfChannelGen) {
 		ResourceNode srcNode = nodeMap.get(in);
 		if (srcNode == null) {
 			srcNode = new ResourceNode(in);

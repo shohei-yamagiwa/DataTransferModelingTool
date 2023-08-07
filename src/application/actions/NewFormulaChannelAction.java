@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 
 import application.ApplicationWindow;
 import application.editor.Editor;
-import models.visualModel.FormulaChannelGenerator;
+import models.visualModel.FormulaChannel;
 
 public class NewFormulaChannelAction extends AbstractEditorAction implements ActionListener {
 	
@@ -56,7 +56,7 @@ public class NewFormulaChannelAction extends AbstractEditorAction implements Act
 		String channelName = channelText.getText();
 		String symbol = symbolText.getText();
 		if(r == JOptionPane.OK_OPTION) {
-			editor.addFormulaChannelGenerator(new FormulaChannelGenerator(channelName, editor.getModel().getSymbol(symbol)));
+			editor.addFormulaChannel(new FormulaChannel(channelName, editor.getModel().getSymbol(symbol)));
 		}
 	}
 }

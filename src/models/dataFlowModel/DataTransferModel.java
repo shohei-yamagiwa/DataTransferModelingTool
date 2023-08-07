@@ -2,27 +2,27 @@ package models.dataFlowModel;
 
 import java.util.Set;
 
-import models.dataConstraintModel.ChannelGenerator;
+import models.dataConstraintModel.Channel;
 import models.dataConstraintModel.DataConstraintModel;
-import models.dataConstraintModel.IdentifierTemplate;
+import models.dataConstraintModel.ResourcePath;
 
 public class DataTransferModel extends DataConstraintModel {	
 	public DataFlowGraph getDataFlowGraph() {
 		DataFlowGraph dataFlowGraph = new DataFlowGraph();
-		for (ChannelGenerator channelGen: getChannelGenerators()) {
-			DataTransferChannelGenerator dfChannelGen = (DataTransferChannelGenerator)channelGen;
-			Set<IdentifierTemplate> inputResources = dfChannelGen.getInputIdentifierTemplates();
-			Set<IdentifierTemplate> outputResources = dfChannelGen.getOutputIdentifierTemplates();
-			for (IdentifierTemplate in: inputResources) {
-				for (IdentifierTemplate out: outputResources) {
+		for (Channel channelGen: getChannels()) {
+			DataTransferChannel dfChannelGen = (DataTransferChannel)channelGen;
+			Set<ResourcePath> inputResources = dfChannelGen.getInputResources();
+			Set<ResourcePath> outputResources = dfChannelGen.getOutputResources();
+			for (ResourcePath in: inputResources) {
+				for (ResourcePath out: outputResources) {
 					dataFlowGraph.addEdge(in ,out, dfChannelGen);
 				}
 			}
 		}
-		for (ChannelGenerator channelGen: getIOChannelGenerators()) {
-			DataTransferChannelGenerator dfChannelGen = (DataTransferChannelGenerator)channelGen;
-			Set<IdentifierTemplate> outputResources = dfChannelGen.getOutputIdentifierTemplates();
-			for (IdentifierTemplate out: outputResources) {
+		for (Channel channelGen: getIOChannel()) {
+			DataTransferChannel dfChannelGen = (DataTransferChannel)channelGen;
+			Set<ResourcePath> outputResources = dfChannelGen.getOutputResources();
+			for (ResourcePath out: outputResources) {
 				dataFlowGraph.addNode(out);
 			}			
 		}

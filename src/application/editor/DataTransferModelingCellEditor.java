@@ -24,10 +24,10 @@ import com.mxgraph.view.mxCellState;
 
 import models.algebra.Expression;
 import models.dataFlowModel.DataTransferModel;
-import models.dataFlowModel.DataTransferChannelGenerator;
+import models.dataFlowModel.DataTransferChannel;
 import models.dataFlowModel.PushPullAttribute;
 import models.dataFlowModel.PushPullValue;
-import models.visualModel.FormulaChannelGenerator;
+import models.visualModel.FormulaChannel;
 import parser.Parser;
 import parser.Parser.TokenStream;
 import parser.exceptions.ExpectedRightBracket;
@@ -65,16 +65,16 @@ public class DataTransferModelingCellEditor  implements mxICellEditor {
 
 		if (!graphComponent.getGraph().getModel().isEdge(cell)) {
 			DataTransferModel model = editor.getModel();
-			DataTransferChannelGenerator ch = (DataTransferChannelGenerator) model.getChannelGenerator((String) ((mxCell) cell).getValue());
+			DataTransferChannel ch = (DataTransferChannel) model.getChannel((String) ((mxCell) cell).getValue());
 			if (ch == null) {
-				ch = (DataTransferChannelGenerator) model.getIOChannelGenerator((String) ((mxCell) cell).getValue());
+				ch = (DataTransferChannel) model.getIOChannel((String) ((mxCell) cell).getValue());
 				if(ch == null) {
 					//resource
 					return;
 				}
 			}
 
-			if(ch instanceof FormulaChannelGenerator) {
+			if(ch instanceof FormulaChannel) {
 
 				JPanel panel = new JPanel();
 				JLabel label1 = new JLabel("Formula: ");
@@ -90,7 +90,7 @@ public class DataTransferModelingCellEditor  implements mxICellEditor {
 
 				gbc.gridx = 1;
 				gbc.gridy = 0;
-				JTextField formulaText = new JTextField(((FormulaChannelGenerator) ch).getFormula(),15);
+				JTextField formulaText = new JTextField(((FormulaChannel) ch).getFormula(),15);
 				layout.setConstraints(formulaText, gbc);
 				panel.add(formulaText);
 
@@ -121,8 +121,8 @@ public class DataTransferModelingCellEditor  implements mxICellEditor {
 
 					try {
 						Expression exp = parser.parseTerm(stream, editor.getModel());
-						((FormulaChannelGenerator) ch).setFormula(formula);
-						((FormulaChannelGenerator) ch).setFormulaTerm(exp);
+						((FormulaChannel) ch).setFormula(formula);
+						((FormulaChannel) ch).setFormulaTerm(exp);
 					} catch (ExpectedRightBracket e) {
 						e.printStackTrace();
 					}

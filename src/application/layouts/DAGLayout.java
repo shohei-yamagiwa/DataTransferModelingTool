@@ -15,9 +15,6 @@ import com.mxgraph.view.mxCellState;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxGraphView;
 
-import models.dataConstraintModel.ChannelGenerator;
-import models.dataConstraintModel.IdentifierTemplate;
-
 public class DAGLayout extends mxGraphLayout {
 
 	public DAGLayout(mxGraph graph) {

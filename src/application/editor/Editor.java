@@ -35,16 +35,16 @@ import code.ast.CompilationUnit;
 import models.Edge;
 import models.EdgeAttribute;
 import models.Node;
-import models.dataConstraintModel.ChannelGenerator;
+import models.dataConstraintModel.Channel;
 import models.dataConstraintModel.ChannelMember;
-import models.dataConstraintModel.IdentifierTemplate;
+import models.dataConstraintModel.ResourcePath;
 import models.dataFlowModel.DataTransferModel;
-import models.dataFlowModel.DataTransferChannelGenerator;
+import models.dataFlowModel.DataTransferChannel;
 import models.dataFlowModel.PushPullAttribute;
 import models.dataFlowModel.DataFlowEdge;
 import models.dataFlowModel.DataFlowGraph;
 import models.dataFlowModel.ResourceNode;
-import models.visualModel.FormulaChannelGenerator;
+import models.visualModel.FormulaChannel;
 import parser.Parser;
 import parser.Parser.TokenStream;
 import parser.exceptions.ExpectedAssignment;
@@ -212,7 +212,7 @@ public class Editor {
 				if (!Validation.checkUpdateConflict(model)) return null;
 				graph = constructGraph(model);
 				analyzeDataTransferModel(model);
-								
+				
 				// Set DAG layout.
 				setDAGLayout();
 				return model;
@@ -294,21 +294,21 @@ public class Editor {
 				int w = (int) state.getWidth();
 				int h = (int) state.getHeight();
 
-				for(ChannelGenerator ch: model.getChannelGenerators()) {
-					if(ch instanceof FormulaChannelGenerator && state.getLabel().equals(ch.getChannelName())) {
+				for(Channel ch: model.getChannels()) {
+					if(ch instanceof FormulaChannel && state.getLabel().equals(ch.getChannelName())) {
 						fileString += "\tnode fc " + state.getLabel() + ":" + x + "," + y + "," + w + "," + h+"\n";		
-					} else if(ch instanceof ChannelGenerator && state.getLabel().equals(ch.getChannelName())) {
+					} else if(ch instanceof Channel && state.getLabel().equals(ch.getChannelName())) {
 						fileString +="\tnode c " + state.getLabel() + ":" + x + "," + y + "," + w + "," + h+"\n";
 					}
 				}
 
-				for (IdentifierTemplate res: model.getIdentifierTemplates()){
-					if(res instanceof IdentifierTemplate && state.getLabel().equals(res.getResourceName()))
+				for (ResourcePath res: model.getResourcePaths()){
+					if(res instanceof ResourcePath && state.getLabel().equals(res.getResourceName()))
 						fileString += "\tnode r " + state.getLabel() + ":" + x + "," + y + "," + w + "," + h + "\n";
 				}
 
-				for (ChannelGenerator ioC: model.getIOChannelGenerators()) {
-					if(ioC instanceof ChannelGenerator && state.getLabel().equals(ioC.getChannelName())) {
+				for (Channel ioC: model.getIOChannel()) {
+					if(ioC instanceof Channel && state.getLabel().equals(ioC.getChannelName())) {
 						fileString += "\tnode ioc " + state.getLabel() + ":" + x + "," + y + "," + w + "," + h + "\n";
 					}
 				}
@@ -338,13 +338,13 @@ public class Editor {
 			geo2.setOffset(new mxPoint(-PORT_RADIUS, -PORT_RADIUS));
 			geo2.setRelative(true);
 
-			Map<DataTransferChannelGenerator, Object> channelsIn = new HashMap<>();
-			Map<DataTransferChannelGenerator, Object> channelsOut = new HashMap<>();
-			Map<IdentifierTemplate, Object> resources = new HashMap<>();
+			Map<DataTransferChannel, Object> channelsIn = new HashMap<>();
+			Map<DataTransferChannel, Object> channelsOut = new HashMap<>();
+			Map<ResourcePath, Object> resources = new HashMap<>();
 
 			// create channel vertices
-			for (ChannelGenerator c: model.getChannelGenerators()) {
-				DataTransferChannelGenerator channelGen = (DataTransferChannelGenerator) c;
+			for (Channel c: model.getChannels()) {
+				DataTransferChannel channelGen = (DataTransferChannel) c;
 				if (channelsIn.get(channelGen) == null || channelsOut.get(channelGen) == null) {
 					Object channel = graph.insertVertex(parent, null, channelGen.getChannelName(), 150, 20, 30, 30); // insert a channel as a vertex
 					mxCell port_in = new mxCell(null, geo1, "shape=ellipse;perimter=ellipsePerimeter");
@@ -359,7 +359,7 @@ public class Editor {
 			}
 
 			// create resource vertices
-			for (IdentifierTemplate res: model.getIdentifierTemplates()) {
+			for (ResourcePath res: model.getResourcePaths()) {
 				Object resource = graph.insertVertex(parent, null,
 						res.getResourceName(), 20, 20, 80, 30,
 						"shape=ellipse;perimeter=ellipsePerimeter"); // insert a resource as a vertex
@@ -367,30 +367,30 @@ public class Editor {
 			}
 
 			// add input, output and reference edges
-			for (ChannelGenerator ch: model.getChannelGenerators()) {
-				DataTransferChannelGenerator channelGen = (DataTransferChannelGenerator) ch;
+			for (Channel ch: model.getChannels()) {
+				DataTransferChannel channelGen = (DataTransferChannel) ch;
 				// input edge
-				for (IdentifierTemplate srcRes: channelGen.getInputIdentifierTemplates()) {
+				for (ResourcePath srcRes: channelGen.getInputResources()) {
 					graph.insertEdge(parent, null, new SrcDstAttribute(srcRes, channelGen), resources.get(srcRes), channelsIn.get(channelGen), "movable=false");
 				}
 				// output edge
-				for (IdentifierTemplate dstRes: channelGen.getOutputIdentifierTemplates()) {
+				for (ResourcePath dstRes: channelGen.getOutputResources()) {
 					graph.insertEdge(parent, null, new SrcDstAttribute(channelGen, dstRes), channelsOut.get(channelGen), resources.get(dstRes), "movable=false");
 				}
 				// reference edges
-				for (IdentifierTemplate refRes: channelGen.getReferenceIdentifierTemplates()) {
+				for (ResourcePath refRes: channelGen.getReferenceResources()) {
 					graph.insertEdge(parent, null, null, resources.get(refRes), channelsIn.get(channelGen), "dashed=true;movable=false");
 				}
 			}
 
-			for (ChannelGenerator ioChannelGen: model.getIOChannelGenerators()) {
+			for (Channel ioChannelGen: model.getIOChannel()) {
 				if (channelsOut.get(ioChannelGen) == null) {
 					Object channel = graph.insertVertex(parent, null, ioChannelGen.getChannelName(), 150, 20, 30, 30); // insert an I/O channel as a vertex
 					mxCell port_out = new mxCell(null, geo2, "shape=ellipse;perimter=ellipsePerimeter");
 					port_out.setVertex(true);
 					graph.addCell(port_out, channel);		// insert the output port of a channel
-					channelsOut.put((DataTransferChannelGenerator) ioChannelGen, port_out);
-					for (IdentifierTemplate outRes: ((DataTransferChannelGenerator) ioChannelGen).getOutputIdentifierTemplates()) {
+					channelsOut.put((DataTransferChannel) ioChannelGen, port_out);
+					for (ResourcePath outRes: ((DataTransferChannel) ioChannelGen).getOutputResources()) {
 						graph.insertEdge(parent, null, null, port_out, resources.get(outRes), "movable=false");
 					}
 				}
@@ -422,14 +422,14 @@ public class Editor {
 			for (Edge e : dataFlowGraph.getEdges()) {
 				if (e instanceof DataFlowEdge) {
 					DataFlowEdge dataFlow = (DataFlowEdge) e;
-					DataTransferChannelGenerator channelGen = dataFlow.getChannelGenerator();
+					DataTransferChannel channelGen = dataFlow.getChannel();
 					ResourceNode srcRes = (ResourceNode) dataFlow.getSource();
 					// input edge
 					for (Object edge: graph.getChildEdges(parent)) {
 						mxCell edgeCell = (mxCell) edge;
 						if (edgeCell.getValue() instanceof SrcDstAttribute) {
 							SrcDstAttribute edgeAttr = (SrcDstAttribute) edgeCell.getValue();
-							if (edgeAttr.getSrouce() == srcRes.getIdentifierTemplate() && edgeAttr.getDestination() == channelGen) {
+							if (edgeAttr.getSrouce() == srcRes.getResource() && edgeAttr.getDestination() == channelGen) {
 								edgeCell.setValue(dataFlow.getAttribute());
 								break;
 							}
@@ -468,8 +468,8 @@ public class Editor {
 		}
 	}
 
-	public void addIdentifierTemplate(IdentifierTemplate res) {
-		getModel().addIdentifierTemplate(res);
+	public void addResourcePath(ResourcePath res) {
+		getModel().addResourcePath(res);
 		resetDataFlowGraph();
 		graph.getModel().beginUpdate();
 		Object parent = graph.getDefaultParent();
@@ -481,8 +481,8 @@ public class Editor {
 		}
 	}
 
-	public void addChannelGenerator(DataTransferChannelGenerator channelGen) {
-		getModel().addChannelGenerator(channelGen);
+	public void addChannel(DataTransferChannel channelGen) {
+		getModel().addChannel(channelGen);
 		resetDataFlowGraph();
 		graph.getModel().beginUpdate();
 		Object parent = graph.getDefaultParent();
@@ -507,8 +507,8 @@ public class Editor {
 		}
 	}
 
-	public void addIOChannelGenerator(DataTransferChannelGenerator ioChannelGen) {
-		getModel().addIOChannelGenerator(ioChannelGen);
+	public void addIOChannel(DataTransferChannel ioChannelGen) {
+		getModel().addIOChannel(ioChannelGen);
 		resetDataFlowGraph();
 		graph.getModel().beginUpdate();
 		Object parent = graph.getDefaultParent();
@@ -526,8 +526,8 @@ public class Editor {
 		}
 	}
 
-	public void addFormulaChannelGenerator(FormulaChannelGenerator formulaChannelGen) {
-		getModel().addChannelGenerator(formulaChannelGen);
+	public void addFormulaChannel(FormulaChannel formulaChannelGen) {
+		getModel().addChannel(formulaChannelGen);
 		resetDataFlowGraph();
 		graph.getModel().beginUpdate();
 		Object parent = graph.getDefaultParent();
@@ -554,26 +554,26 @@ public class Editor {
 
 	public boolean connectEdge(mxCell edge, mxCell src, mxCell dst) {
 		DataTransferModel model = getModel();
-		ChannelGenerator srcCh = model.getChannelGenerator((String) src.getValue());
+		Channel srcCh = model.getChannel((String) src.getValue());
 		if (srcCh == null) {
-			srcCh = model.getIOChannelGenerator((String) src.getValue());
+			srcCh = model.getIOChannel((String) src.getValue());
 			if (srcCh == null) {
-				IdentifierTemplate srcRes = model.getIdentifierTemplate((String) src.getValue());
-				ChannelGenerator dstCh = model.getChannelGenerator((String) dst.getValue());
+				ResourcePath srcRes = model.getResourcePath((String) src.getValue());
+				Channel dstCh = model.getChannel((String) dst.getValue());
 				if (srcRes == null || dstCh == null) return false;
 				// resource to channel edge
 				ChannelMember srcCm = new ChannelMember(srcRes);
-				((DataTransferChannelGenerator ) dstCh).addChannelMemberAsInput(srcCm);
+				((DataTransferChannel ) dstCh).addChannelMemberAsInput(srcCm);
 				edge.setValue(new SrcDstAttribute(srcRes, dstCh));
 				resetDataFlowGraph();
 				return true;
 			}
 		}
-		IdentifierTemplate dstRes = model.getIdentifierTemplate((String) dst.getValue());
+		ResourcePath dstRes = model.getResourcePath((String) dst.getValue());
 		if (dstRes == null) return false;
 		// channel to resource edge
 		ChannelMember dstCm = new ChannelMember(dstRes);
-		((DataTransferChannelGenerator) srcCh).addChannelMemberAsOutput(dstCm);
+		((DataTransferChannel) srcCh).addChannelMemberAsOutput(dstCm);
 		edge.setValue(new SrcDstAttribute(srcCh, dstRes));
 		resetDataFlowGraph();
 		return true;
@@ -585,26 +585,26 @@ public class Editor {
 			if (cell.isEdge()) {
 				String srcName = (String) cell.getSource().getValue();
 				String dstName = (String) cell.getTarget().getValue();
-				if (model.getIdentifierTemplate(srcName) != null) {
+				if (model.getResourcePath(srcName) != null) {
 					// resource to channel edge
-					ChannelGenerator ch = model.getChannelGenerator(dstName);
-					ch.removeChannelMember(model.getIdentifierTemplate(srcName));
-				} else if (model.getIdentifierTemplate(dstName) != null) {
+					Channel ch = model.getChannel(dstName);
+					ch.removeChannelMember(model.getResourcePath(srcName));
+				} else if (model.getResourcePath(dstName) != null) {
 					// channel to resource edge
-					ChannelGenerator ch = model.getChannelGenerator(srcName);
+					Channel ch = model.getChannel(srcName);
 					if (ch == null) {
-						ch = model.getIOChannelGenerator(srcName);
+						ch = model.getIOChannel(srcName);
 					}
-					ch.removeChannelMember(model.getIdentifierTemplate(dstName));
+					ch.removeChannelMember(model.getResourcePath(dstName));
 				}
 			} else if (cell.isVertex()) {
 				String name = (String) cell.getValue();
-				if (model.getChannelGenerator(name) != null) {
-					model.removeChannelGenerator(name);
-				} else if (model.getIOChannelGenerator(name) != null) {
-					model.removeIOChannelGenerator(name);
-				} else if (model.getIdentifierTemplate(name) != null) {
-					model.removeIdentifierTemplate(name);
+				if (model.getChannel(name) != null) {
+					model.removeChannel(name);
+				} else if (model.getIOChannel(name) != null) {
+					model.removeIOChannel(name);
+				} else if (model.getResourcePath(name) != null) {
+					model.removeResourcePath(name);
 				}
 			}
 		}
@@ -612,7 +612,7 @@ public class Editor {
 		resetDataFlowGraph();
 	}
 
-	public void setChannelCode(DataTransferChannelGenerator ch, String code) {
+	public void setChannelCode(DataTransferChannel ch, String code) {
 		ch.setSourceText(code);
 		TokenStream stream = new Parser.TokenStream();
 		Parser parser = new Parser(stream);
@@ -621,10 +621,10 @@ public class Editor {
 			stream.addLine(line);
 		}
 		try {
-			DataTransferChannelGenerator ch2 = parser.parseChannel(getModel());
+			DataTransferChannel ch2 = parser.parseChannel(getModel());
 			for (ChannelMember chm2: ch2.getInputChannelMembers()) {
 				for (ChannelMember chm: ch.getInputChannelMembers()) {
-					if (chm2.getIdentifierTemplate() == chm.getIdentifierTemplate()) {
+					if (chm2.getResource() == chm.getResource()) {
 						chm.setStateTransition(chm2.getStateTransition());
 						break;
 					}
@@ -632,7 +632,7 @@ public class Editor {
 			}
 			for (ChannelMember chm2: ch2.getOutputChannelMembers()) {
 				for (ChannelMember chm: ch.getOutputChannelMembers()) {
-					if (chm2.getIdentifierTemplate() == chm.getIdentifierTemplate()) {
+					if (chm2.getResource() == chm.getResource()) {
 						chm.setStateTransition(chm2.getStateTransition());
 						break;
 					}
@@ -640,7 +640,7 @@ public class Editor {
 			}
 			for (ChannelMember chm2: ch2.getReferenceChannelMembers()) {
 				for (ChannelMember chm: ch.getReferenceChannelMembers()) {
-					if (chm2.getIdentifierTemplate() == chm.getIdentifierTemplate()) {
+					if (chm2.getResource() == chm.getResource()) {
 						chm.setStateTransition(chm2.getStateTransition());
 						break;
 					}
