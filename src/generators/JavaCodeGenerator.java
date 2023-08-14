@@ -167,7 +167,7 @@ public class JavaCodeGenerator {
 					vars.add(new VariableDeclaration(srcRes.getResourceStateType(), srcRes.getResourceName()));
 					DataTransferChannel c = (DataTransferChannel) re.getChannel();
 					for (ResourcePath ref: c.getReferenceResources()) {
-						if (ref != rn.getResource()) {
+						if (!ref.equals(rn.getResource())) {
 							vars.add(new VariableDeclaration(ref.getResourceStateType(), ref.getResourceName()));
 						}
 					}
@@ -414,7 +414,7 @@ public class JavaCodeGenerator {
 			for (Edge e : rn.getOutEdges()) {
 				DataFlowEdge re = (DataFlowEdge) e;
 				for (ChannelMember m: re.getChannel().getReferenceChannelMembers()) {
-					if (m.getResource() == curNode.getResource()) {
+					if (m.getResource().equals(curNode.getResource())) {
 						topologicalSort(graph, rn, visited, orderedList);
 					}
 				}
