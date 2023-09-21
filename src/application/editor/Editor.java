@@ -79,6 +79,8 @@ public class Editor {
 	protected String curFileName = null;
 	protected String curFilePath = null;
 	protected ArrayList<CompilationUnit> codes = null;
+	
+	private boolean bReflectingArchitectureModel = false;
 
 	public Editor(mxGraphComponent graphComponent) {
 		this.graphComponent = graphComponent;
@@ -326,6 +328,7 @@ public class Editor {
 	 * @return constructed mxGraph
 	 */
 	public mxGraph constructGraph(DataTransferModel model) {
+		bReflectingArchitectureModel  = true;
 		((mxGraphModel) graph.getModel()).clear();
 		Object parent = graph.getDefaultParent();
 		graph.getModel().beginUpdate();
@@ -400,6 +403,7 @@ public class Editor {
 		}
 		setTreeLayout();
 
+		bReflectingArchitectureModel = false;
 		return graph;
 	}
 
@@ -553,6 +557,7 @@ public class Editor {
 	}
 
 	public boolean connectEdge(mxCell edge, mxCell src, mxCell dst) {
+		if (bReflectingArchitectureModel) return false;
 		DataTransferModel model = getModel();
 		Channel srcCh = model.getChannel((String) src.getValue());
 		if (srcCh == null) {

@@ -325,7 +325,7 @@ public class Term extends Expression {
 				return "(" + children.get(implParamOrder[0]).toImplementation(sideEffects) + symbol.toImplementation() + children.get(implParamOrder[1]).toImplementation(sideEffects) + ")";				
 			}
 		}
-		if (getArity() >= 1 && symbol.isImplMethod()) {
+		if ((getArity() >= 1 || getArity() == -1) && symbol.isImplMethod()) {
 			if (implParamOrder == null) {
 				String exp = children.get(0).toImplementation(sideEffects) + "." + symbol.toImplementation() + "(";
 				String delimiter = "";
