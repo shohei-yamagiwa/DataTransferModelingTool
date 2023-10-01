@@ -129,7 +129,6 @@ public class DataConstraintModel {
 	public static final Symbol left = new Symbol("left", 1, Symbol.Type.PREFIX, "getLeft", Symbol.Type.METHOD);
 	public static final Symbol right = new Symbol("right", 1, Symbol.Type.PREFIX, "getRight", Symbol.Type.METHOD);
 	public static final Symbol insert = new Symbol("insert", 3, Symbol.Type.PREFIX, "put", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
-//	public static final Symbol lookup = new Symbol("lookup", 2, Symbol.Type.PREFIX, "get", Symbol.Type.METHOD);
 	public static final Symbol lookup = new Symbol("lookup", 2, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		final int count[] = {0};
 		@Override
@@ -141,7 +140,7 @@ public class DataConstraintModel {
 			impl += "\t" + temp + " = " + childrenImpl[0] + ".get(" + childrenImpl[1] + ");\n";
 			impl += "} else {\n";
 			impl += "\t" + temp + " = " + getDefaultValue(type) + ";\n";
-			impl += "}\n";
+			impl += "}";
 			sideEffect[0] = impl;
 			count[0]++;
 			return temp;
