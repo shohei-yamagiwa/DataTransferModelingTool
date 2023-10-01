@@ -1,2 +1,2 @@
 # DataTransferModelingTool
-A visual web services architecture modeling tool for changing PUSH/PULL data transfer.
+A visual modeling tool for web services architecture that can change PUSH/PULL data transfer.
