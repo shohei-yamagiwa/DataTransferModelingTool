@@ -49,6 +49,7 @@ public class DataConstraintModel {
 		public String generate(Type type, String[] children, String[] childrenSideEffects, String[] sideEffect) {
 			String compType = "";
 			if (type != null) {
+				String temp = "temp_nil";
 				String interfaceType = type.getInterfaceTypeName();
 				if (interfaceType.contains("<")) {
 					compType = interfaceType.substring(interfaceType.indexOf("<") + 1, interfaceType.lastIndexOf(">"));
@@ -57,7 +58,8 @@ public class DataConstraintModel {
 				if (implType.indexOf('<') >= 0) {
 					implType = implType.substring(0, implType.indexOf('<'));
 				}
-				return "new " + implType + "<" + compType + ">()";
+				sideEffect[0] = interfaceType + " " + temp + " = " + "new " + implType + "<" + compType + ">();\n";
+				return temp;
 			}			
 			return "new ArrayList<" + compType + ">()";
 		}
