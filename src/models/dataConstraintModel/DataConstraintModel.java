@@ -38,6 +38,7 @@ public class DataConstraintModel {
 	public static final Symbol div = new Symbol(Parser.DIV, 2, Symbol.Type.INFIX);
 	public static final Symbol minus = new Symbol(Parser.MINUS, 1);
 	public static final Symbol cons = new Symbol("cons", 2, Symbol.Type.PREFIX, "($x,$y)->$x.add(0, $y)", Symbol.Type.LAMBDA_WITH_SIDE_EFFECT, new int[] {1, 0});
+	public static final Symbol append = new Symbol("append", 2, Symbol.Type.PREFIX, "add", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
 	public static final Symbol head = new Symbol("head", 1, Symbol.Type.PREFIX, "($x)->$x.get(0)", Symbol.Type.LAMBDA);
 	public static final Symbol tail = new Symbol("tail", 1, Symbol.Type.PREFIX, "($x)->$x.subList(1, $x.size())", Symbol.Type.LAMBDA);
 	public static final Symbol length = new Symbol("length", 1, Symbol.Type.PREFIX, "($x)->$x.size()", Symbol.Type.LAMBDA);
@@ -171,6 +172,9 @@ public class DataConstraintModel {
 		mod.setSignature(new Type[] {typeInt, null, null});
 		cons.setInverses(new Symbol[] {head, tail});
 		cons.setSignature(new Type[] {typeList, null, typeList});
+		append.setSignature(new Type[] {typeList, typeList, null});
+		head.setSignature(new Type[] {null, typeList});
+		tail.setSignature(new Type[] {typeList, typeList});
 		contains.setSignature(new Type[] {typeBoolean, typeList, null});
 		length.setSignature(new Type[] {typeInt, null});
 		get.setSignature(new Type[] {null, typeList, typeInt});
@@ -242,6 +246,7 @@ public class DataConstraintModel {
 		addSymbol(minus);
 		addSymbol(mod);
 		addSymbol(cons);
+		addSymbol(append);
 		addSymbol(head);
 		addSymbol(tail);
 		addSymbol(length);
