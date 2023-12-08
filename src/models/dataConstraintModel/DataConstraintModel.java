@@ -39,6 +39,7 @@ public class DataConstraintModel {
 	public static final Symbol minus = new Symbol(Parser.MINUS, 1);
 	public static final Symbol cons = new Symbol("cons", 2, Symbol.Type.PREFIX, "($x,$y)->$x.add(0, $y)", Symbol.Type.LAMBDA_WITH_SIDE_EFFECT, new int[] {1, 0});
 	public static final Symbol append = new Symbol("append", 2, Symbol.Type.PREFIX, "add", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
+	public static final Symbol remove = new Symbol("remove", 2, Symbol.Type.PREFIX, "remove", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
 	public static final Symbol head = new Symbol("head", 1, Symbol.Type.PREFIX, "($x)->$x.get(0)", Symbol.Type.LAMBDA);
 	public static final Symbol tail = new Symbol("tail", 1, Symbol.Type.PREFIX, "($x)->$x.subList(1, $x.size())", Symbol.Type.LAMBDA);
 	public static final Symbol length = new Symbol("length", 1, Symbol.Type.PREFIX, "($x)->$x.size()", Symbol.Type.LAMBDA);
@@ -132,6 +133,7 @@ public class DataConstraintModel {
 	public static final Symbol left = new Symbol("left", 1, Symbol.Type.PREFIX, "getLeft", Symbol.Type.METHOD);
 	public static final Symbol right = new Symbol("right", 1, Symbol.Type.PREFIX, "getRight", Symbol.Type.METHOD);
 	public static final Symbol insert = new Symbol("insert", 3, Symbol.Type.PREFIX, "put", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
+	public static final Symbol delete = new Symbol("delete", 2, Symbol.Type.PREFIX, "remove", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
 	public static final Symbol lookup = new Symbol("lookup", 2, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		final int count[] = {0};
 		@Override
@@ -173,6 +175,7 @@ public class DataConstraintModel {
 		cons.setInverses(new Symbol[] {head, tail});
 		cons.setSignature(new Type[] {typeList, null, typeList});
 		append.setSignature(new Type[] {typeList, typeList, null});
+		remove.setSignature(new Type[] {typeList, typeList, typeInt});
 		head.setSignature(new Type[] {null, typeList});
 		tail.setSignature(new Type[] {typeList, typeList});
 		contains.setSignature(new Type[] {typeBoolean, typeList, null});
@@ -202,6 +205,7 @@ public class DataConstraintModel {
 		snd.setSignature(new Type[] {null, typeTuple});
 		snd.setInverses(new Symbol[] {new LambdaAbstraction(new Variable("y"), new Term(tuple, new Expression[] {new Variable("x"), new Variable("y")}))});
 		insert.setSignature(new Type[] {typeMap, typeMap, null, null});
+		delete.setSignature(new Type[] {typeMap, typeMap, null});
 		lookup.setSignature(new Type[] {null, typeMap, null});
 		pi.setSignature(new Type[] {typeDouble});
 		E.setSignature(new Type[] {typeDouble});
@@ -247,6 +251,7 @@ public class DataConstraintModel {
 		addSymbol(mod);
 		addSymbol(cons);
 		addSymbol(append);
+		addSymbol(remove);
 		addSymbol(head);
 		addSymbol(tail);
 		addSymbol(length);
@@ -274,6 +279,7 @@ public class DataConstraintModel {
 		addSymbol(fst);
 		addSymbol(snd);
 		addSymbol(insert);
+		addSymbol(delete);
 		addSymbol(lookup);
 		addSymbol(pi);
 		addSymbol(E);
