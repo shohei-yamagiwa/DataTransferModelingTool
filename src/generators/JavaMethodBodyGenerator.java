@@ -78,11 +78,12 @@ public class JavaMethodBodyGenerator {
 									update.addFirstStatement(updateStatement);
 								}
 							}
-							if (dst.getIndegree() > 1) {
-								// update a cash of src side resource (when incoming edges are multiple)
-								String cashStatement = "this." + srcResourceName + " = " + srcResourceName + ";";
-								if (update.getBody() == null || !update.getBody().getStatements().contains(cashStatement)) {
-									update.addFirstStatement(cashStatement);
+							if (dst.getIndegree() > 1
+									|| (dst.getIndegree() == 1 && d.getChannel().getInputChannelMembers().iterator().next().getStateTransition().isRightPartial())) {
+								// update a cache of src side resource (when incoming edges are multiple)
+								String cacheStatement = "this." + srcResourceName + " = " + srcResourceName + ";";
+								if (update.getBody() == null || !update.getBody().getStatements().contains(cacheStatement)) {
+									update.addStatement(cacheStatement);
 								}								
 							}
 							MethodDeclaration getter = getGetterMethod(dstType);

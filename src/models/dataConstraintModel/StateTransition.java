@@ -42,11 +42,23 @@ public class StateTransition {
 		this.messageExpression = messageExpression;
 	}
 	
+	
 	public boolean isRightUnary() {
-		for (Position pos : curStateExpression.getVariables().keySet()) {
-			if (nextStateExpression.contains(curStateExpression.getVariables().get(pos))) return false;
+		for (Variable var: curStateExpression.getVariables().values()) {
+			if (nextStateExpression.contains(var)) return false;
 		}
 		return true;
+	}
+	
+	public boolean isRightPartial() {
+		for (Variable var: curStateExpression.getVariables().values()) {
+			if (messageExpression.contains(var)) return true;
+		}
+		if (isRightUnary()) return false;
+		for (Variable var: messageExpression.getVariables().values()) {
+			if (nextStateExpression.contains(var)) return true;
+		}
+		return false;
 	}
 
 	public Expression deriveMessageConstraintFor(Expression curStateValue, Expression nextStateValue) throws InvalidMessage, ResolvingMultipleDefinitionIsFutureWork {

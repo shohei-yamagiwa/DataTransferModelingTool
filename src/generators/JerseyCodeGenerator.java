@@ -119,12 +119,15 @@ public class JerseyCodeGenerator {
 							}
 						}
 					}
-					if (rn.getInEdges().size() > 1) {
-						 // For each source resource, a child resource is defined in the destination resource so that its state can be updated separately.
-						update.addAnnotation(new Annotation("Path", "\"/" + srcName + "\""));
-						// Declare a field to cash the state of the source resource in the type of the destination resource.
-						ResourcePath cashResId = ((ResourceNode) re.getSource()).getResource();
-						type.addField(new FieldDeclaration(cashResId.getResourceStateType(), srcName, getInitializer(cashResId)));
+					if (rn.getIndegree() > 1 
+							|| (rn.getIndegree() == 1 && re.getChannel().getInputChannelMembers().iterator().next().getStateTransition().isRightPartial())) {
+						// Declare a field to cache the state of the source resource in the type of the destination resource.
+						ResourcePath cacheRes = ((ResourceNode) re.getSource()).getResource();
+						type.addField(new FieldDeclaration(cacheRes.getResourceStateType(), srcName, getInitializer(cacheRes)));
+						if (rn.getIndegree() > 1) {
+							 // For each source resource, a child resource is defined in the destination resource so that its state can be updated separately.
+							update.addAnnotation(new Annotation("Path", "\"/" + srcName + "\""));							
+						}
 					}
 					type.addMethod(update);
 				}
@@ -322,7 +325,10 @@ public class JerseyCodeGenerator {
 						target.getResourceStateType() != null ? target.getResourceStateType()
 								: DataConstraintModel.typeInt);
 			}
-			return null;
+			// use the cached value as the current state
+			return new Field(target.getResourceName(),
+					target.getResourceStateType() != null ? target.getResourceStateType()
+							: DataConstraintModel.typeInt);
 		}
 
 		@Override

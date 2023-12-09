@@ -102,11 +102,12 @@ public class JavaCodeGenerator {
 					fieldInitializer += resName.toLowerCase() + ",";
 					f = true;
 				} else {
-					if (rn.getIndegree() > 1) {
-						// Declare a field to cash the state of the source resource in the type of the destination resource.
-						ResourcePath cashResId = ((ResourceNode) re.getSource()).getResource();
+					if (rn.getIndegree() > 1 
+							|| (rn.getIndegree() == 1 && re.getChannel().getInputChannelMembers().iterator().next().getStateTransition().isRightPartial())) {
+						// Declare a field to cache the state of the source resource in the type of the destination resource.
+						ResourcePath cacheRes = ((ResourceNode) re.getSource()).getResource();
 						type.addField(new FieldDeclaration(
-								cashResId.getResourceStateType(), ((ResourceNode) re.getSource()).getResource().getResourceName(), getInitializer(cashResId)));
+								cacheRes.getResourceStateType(), ((ResourceNode) re.getSource()).getResource().getResourceName(), getInitializer(cacheRes)));
 					}
 				}
 			}
@@ -438,8 +439,8 @@ public class JavaCodeGenerator {
 						target.getResourceStateType() != null ? target.getResourceStateType()
 								: DataConstraintModel.typeInt);
 			}
-			// for reference channel member
-			return new Parameter(target.getResourceName(),
+			// use the cached value as the current state
+			return new Field(target.getResourceName(),
 					target.getResourceStateType() != null ? target.getResourceStateType()
 							: DataConstraintModel.typeInt);
 		}
