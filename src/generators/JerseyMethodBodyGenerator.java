@@ -82,7 +82,7 @@ public class JerseyMethodBodyGenerator {
 										inputResourceToStateAccessor.put(((ResourceNode) dIn.getSource()).getResource(), JerseyCodeGenerator.pushAccessor);
 									}
 									for (ChannelMember c: d.getChannel().getReferenceChannelMembers()) {
-										inputResourceToStateAccessor.put(c.getResource(), JerseyCodeGenerator.pullAccessor);
+										inputResourceToStateAccessor.put(c.getResource(), JerseyCodeGenerator.refAccessor);
 									}
 									updateExp = d.getChannel().deriveUpdateExpressionOf(out, JerseyCodeGenerator.pushAccessor, inputResourceToStateAccessor);
 								}

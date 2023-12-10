@@ -359,4 +359,25 @@ public class JerseyCodeGenerator {
 							: DataConstraintModel.typeInt);
 		}
 	};
+	static public IResourceStateAccessor refAccessor = new IResourceStateAccessor() {
+		@Override
+		public Expression getCurrentStateAccessorFor(ResourcePath target, ResourcePath from) {
+			if (target.equals(from)) {
+				return new Field("value",
+						target.getResourceStateType() != null ? target.getResourceStateType()
+								: DataConstraintModel.typeInt);
+			}
+			// for reference channel member
+			return new Parameter(target.getResourceName(),
+					target.getResourceStateType() != null ? target.getResourceStateType()
+							: DataConstraintModel.typeInt);
+		}
+
+		@Override
+		public Expression getNextStateAccessorFor(ResourcePath target, ResourcePath from) {
+			return new Parameter(target.getResourceName(),
+					target.getResourceStateType() != null ? target.getResourceStateType()
+							: DataConstraintModel.typeInt);
+		}
+	};
 }

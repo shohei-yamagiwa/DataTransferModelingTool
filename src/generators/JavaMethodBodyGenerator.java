@@ -65,16 +65,31 @@ public class JavaMethodBodyGenerator {
 							MethodDeclaration update = getUpdateMethod(dstType, srcType);
 							if (((StoreAttribute) dst.getAttribute()).isStored()) {
 								// update stored state of dst side resource (when every incoming edge is in push style)
-								Expression updateExp = d.getChannel().deriveUpdateExpressionOf(out, JavaCodeGenerator.pushAccessor);									
+								Expression updateExp = null;
+								if (d.getChannel().getReferenceChannelMembers().size() == 0) {
+									updateExp = d.getChannel().deriveUpdateExpressionOf(out, JavaCodeGenerator.pushAccessor);									
+								} else {
+									// if there exists one or more reference channel member.
+									HashMap<ResourcePath, IResourceStateAccessor> inputResourceToStateAccessor = new HashMap<>();
+									for (Edge eIn: dst.getInEdges()) {
+										DataFlowEdge dIn = (DataFlowEdge) eIn;
+										inputResourceToStateAccessor.put(((ResourceNode) dIn.getSource()).getResource(), JavaCodeGenerator.pushAccessor);
+									}
+									for (ChannelMember c: d.getChannel().getReferenceChannelMembers()) {
+										inputResourceToStateAccessor.put(c.getResource(), JavaCodeGenerator.refAccessor);
+									}
+									updateExp = d.getChannel().deriveUpdateExpressionOf(out, JavaCodeGenerator.pushAccessor, inputResourceToStateAccessor);
+								}
 								String[] sideEffects = new String[] {""};
 								String curState = updateExp.toImplementation(sideEffects);
 								String updateStatement;
 								if (updateExp instanceof Term && ((Term) updateExp).getSymbol().isImplWithSideEffect()) {
 									updateStatement = sideEffects[0];
 								} else {
-									updateStatement = sideEffects[0] + "value = " + curState + ";";
+									updateStatement = sideEffects[0] + "this.value = " + curState + ";";
 								}
 								if (update.getBody() == null || !update.getBody().getStatements().contains(updateStatement)) {
+									// add an update statement of the state of dst side resource.
 									update.addFirstStatement(updateStatement);
 								}
 							}
