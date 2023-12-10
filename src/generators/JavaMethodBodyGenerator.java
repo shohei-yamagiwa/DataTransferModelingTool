@@ -16,6 +16,7 @@ import models.Node;
 import models.algebra.Expression;
 import models.algebra.InvalidMessage;
 import models.algebra.ParameterizedIdentifierIsFutureWork;
+import models.algebra.Position;
 import models.algebra.Term;
 import models.algebra.Type;
 import models.algebra.UnificationFailed;
@@ -247,7 +248,7 @@ public class JavaMethodBodyGenerator {
 							MethodDeclaration input = getInputMethod(type, out);
 							if (input != null) {
 								String[] sideEffects = new String[] {""};
-								Expression updateExp = entry.getKey().deriveUpdateExpressionOf(out, JavaCodeGenerator.pushAccessor);
+								Expression updateExp = entry.getKey().deriveUpdateExpressionOf(out, JavaCodeGenerator.refAccessor);
 								String newState = updateExp.toImplementation(sideEffects);
 								String updateStatement;
 								if (updateExp instanceof Term && ((Term) updateExp).getSymbol().isImplWithSideEffect()) {
@@ -265,8 +266,20 @@ public class JavaMethodBodyGenerator {
 										String delimitar = "";
 										if (out.getStateTransition().getMessageExpression() instanceof Term) {
 											Term message = (Term) out.getStateTransition().getMessageExpression();
-											for (Variable var: message.getVariables().values()) {
-												args += delimitar + var.getName();
+											for (Map.Entry<Position, Variable> varEnt: message.getVariables().entrySet()) {
+												String refVarName = null;
+												for (ChannelMember rc: entry.getKey().getReferenceChannelMembers()) {
+													Expression varExp = rc.getStateTransition().getMessageExpression().getSubTerm(varEnt.getKey());
+													if (varExp != null && rc.getStateTransition().getCurStateExpression().contains(varExp)) {
+														refVarName = rc.getResource().getResourceName();
+														break;
+													}
+												}
+												if (refVarName != null) {
+													args += delimitar + refVarName;
+												} else {
+													args += delimitar + varEnt.getValue().getName();
+												}
 												delimitar = ", ";
 											}
 										}

@@ -2,6 +2,7 @@ package generators;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import code.ast.Annotation;
@@ -17,6 +18,7 @@ import models.Node;
 import models.algebra.Expression;
 import models.algebra.Field;
 import models.algebra.Parameter;
+import models.algebra.Position;
 import models.algebra.Symbol;
 import models.algebra.Term;
 import models.algebra.Type;
@@ -158,11 +160,30 @@ public class JerseyCodeGenerator {
 						Expression message = cm.getStateTransition().getMessageExpression();
 						if (message instanceof Term) {
 							ArrayList<VariableDeclaration> params = new ArrayList<>();
-							for (Variable var: message.getVariables().values()) {
-								String paramName = var.getName();
-								VariableDeclaration param = new VariableDeclaration(var.getType(), paramName);
-								param.addAnnotation(new Annotation("FormParam", "\"" + paramName + "\""));
-								params.add(param);
+							for (Map.Entry<Position, Variable> varEnt: message.getVariables().entrySet()) {
+								Variable var = varEnt.getValue();
+								String refVarName = null;
+								for (ChannelMember refCm: ((DataTransferChannel) ch).getReferenceChannelMembers()) {
+									Expression varExp = refCm.getStateTransition().getMessageExpression().getSubTerm(varEnt.getKey());
+									if (varExp != null && varExp instanceof Variable) {
+										if (refCm.getStateTransition().getCurStateExpression().contains(varExp)) {
+											refVarName = refCm.getResource().getResourceName();
+											break;
+										}
+									}
+								}
+								if (refVarName != null) {
+									// var has come from a reference resource.
+									VariableDeclaration param = new VariableDeclaration(var.getType(), refVarName);
+									param.addAnnotation(new Annotation("FormParam", "\"" + refVarName + "\""));
+									params.add(param);
+								} else {
+									// var has not come from a reference resource.
+									String paramName = var.getName();
+									VariableDeclaration param = new VariableDeclaration(var.getType(), paramName);
+									param.addAnnotation(new Annotation("FormParam", "\"" + paramName + "\""));
+									params.add(param);
+								}
 							}
 							MethodDeclaration input = new MethodDeclaration(
 									((Term) cm.getStateTransition().getMessageExpression()).getSymbol().getImplName(),

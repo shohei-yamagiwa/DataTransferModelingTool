@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -19,6 +20,7 @@ import models.Node;
 import models.algebra.Expression;
 import models.algebra.Field;
 import models.algebra.Parameter;
+import models.algebra.Position;
 import models.algebra.Symbol;
 import models.algebra.Term;
 import models.algebra.Type;
@@ -203,8 +205,25 @@ public class JavaCodeGenerator {
 						Expression message = cm.getStateTransition().getMessageExpression();
 						if (message instanceof Term) {
 							ArrayList<VariableDeclaration> params = new ArrayList<>();
-							for (Variable var: message.getVariables().values()) {
-								params.add(new VariableDeclaration(var.getType(), var.getName()));
+							for (Map.Entry<Position, Variable> varEnt: message.getVariables().entrySet()) {
+								Variable var = varEnt.getValue();
+								String refVarName = null;
+								for (ChannelMember refCm: ((DataTransferChannel) ch).getReferenceChannelMembers()) {
+									Expression varExp = refCm.getStateTransition().getMessageExpression().getSubTerm(varEnt.getKey());
+									if (varExp != null && varExp instanceof Variable) {
+										if (refCm.getStateTransition().getCurStateExpression().contains(varExp)) {
+											refVarName = refCm.getResource().getResourceName();
+											break;
+										}
+									}
+								}
+								if (refVarName != null) {
+									// var has come from a reference resource.
+									params.add(new VariableDeclaration(var.getType(), refVarName));
+								} else {
+									// var has not come from a reference resource.
+									params.add(new VariableDeclaration(var.getType(), var.getName()));
+								}
 							}
 							MethodDeclaration input = new MethodDeclaration(
 									((Term) cm.getStateTransition().getMessageExpression()).getSymbol().getImplName(),

@@ -311,7 +311,7 @@ public class JerseyMethodBodyGenerator {
 						for (ChannelMember out: outs) {
 							MethodDeclaration input = getInputMethod(type, out);
 							if (input != null) {
-								Expression updateExp = entry.getKey().deriveUpdateExpressionOf(out, JerseyCodeGenerator.pushAccessor);
+								Expression updateExp = entry.getKey().deriveUpdateExpressionOf(out, JerseyCodeGenerator.refAccessor);
 								String[] sideEffects = new String[] {""};
 								String newState = updateExp.toImplementation(sideEffects);
 								String updateStatement;
