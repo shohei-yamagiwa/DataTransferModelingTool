@@ -290,15 +290,22 @@ public class Term extends Expression {
 			return exp;
 		}
 		if (symbol.isImplGenerative()) {
+			Type childrenTypes[] = new Type[children.size()];
 			String childrenImpl[] = new String[children.size()];
 			String childrenSideEffects[] = new String[children.size()];
 			if (implParamOrder == null) {
 				for (int i = 0; i < children.size(); i++) {
+					Expression child = children.get(i);
+					if (child instanceof Variable) {
+						childrenTypes[i] = ((Variable) child).getType();
+					} else if (child instanceof Term) {
+						childrenTypes[i] = ((Term) child).getType();
+					}
 					String childSideEffect[] = new String[] {""};
 					childrenImpl[i] = children.get(i).toImplementation(childSideEffect);
 					childrenSideEffects[i] = childSideEffect[0];
 				}
-				String exp = symbol.generate(getType(), childrenImpl, childrenSideEffects, sideEffects);
+				String exp = symbol.generate(getType(), childrenTypes, childrenImpl, childrenSideEffects, sideEffects);
 				if (symbol.isImplWithSideEffect()) {
 					sideEffects[0] = sideEffects[0] + exp;
 					exp = children.get(0).toImplementation(new String[] {""});	// the value of this term
@@ -306,11 +313,17 @@ public class Term extends Expression {
 				return exp;
 			} else {
 				for (int i = 0; i < children.size(); i++) {
+					Expression child = children.get(implParamOrder[i]);
+					if (child instanceof Variable) {
+						childrenTypes[i] = ((Variable) child).getType();
+					} else if (child instanceof Term) {
+						childrenTypes[i] = ((Term) child).getType();
+					}
 					String childSideEffect[] = new String[] {""};
 					childrenImpl[i] = children.get(implParamOrder[i]).toImplementation(childSideEffect);
 					childrenSideEffects[i] = childSideEffect[0];
 				}
-				String exp = symbol.generate(getType(), childrenImpl, childrenSideEffects, sideEffects);
+				String exp = symbol.generate(getType(), childrenTypes, childrenImpl, childrenSideEffects, sideEffects);
 				if (symbol.isImplWithSideEffect()) {
 					sideEffects[0] = sideEffects[0] + exp;
 					exp = children.get(implParamOrder[0]).toImplementation(new String[] {""});	// the value of this term

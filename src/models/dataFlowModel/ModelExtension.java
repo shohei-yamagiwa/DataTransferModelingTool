@@ -26,7 +26,7 @@ public class ModelExtension {
 			final int[] count = new int[] {0};
 			sum.setGenerator(new Symbol.IImplGenerator() {
 				@Override
-				public String generate(Type type, String[] children, String[] childrenSideEffects, String[] sideEffect) {
+				public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 					String compType = "Integer";
 					if (type != null) {
 						String interfaceType = type.getInterfaceTypeName();
@@ -36,7 +36,7 @@ public class ModelExtension {
 					}
 					count[0]++;
 					String impl = compType + " " + "temp_sum" + count[0] + " = 0;\n";
-					impl += "for (" + compType + " x: " + children[0] + ") {\n";
+					impl += "for (" + compType + " x: " + childrenImpl[0] + ") {\n";
 					impl += "\t" + "temp_sum" + count[0] + " += x;\n";
 					impl += "}\n";
 					sideEffect[0] = sideEffect[0] + impl;
@@ -56,7 +56,7 @@ public class ModelExtension {
 			final int[] count = new int[] {0};
 			merge.setGenerator(new Symbol.IImplGenerator() {
 				@Override
-				public String generate(Type type, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
+				public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 					String implType = "ArrayList<>";
 					String interfaceType = "List<Integer>";
 					String compType = "Integer";
@@ -109,8 +109,8 @@ public class ModelExtension {
 			extractFaceDown.setArity(1);
 			extractFaceDown.setGenerator(new Symbol.IImplGenerator() {
 				@Override
-				public String generate(Type type, String[] children, String[] childrenSideEffects, String[] sideEffect) {			
-					return children[0]+".stream().filter(item -> item.getValue()==false).collect(Collectors.toList())";
+				public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {			
+					return childrenImpl[0]+".stream().filter(item -> item.getValue()==false).collect(Collectors.toList())";
 				}
 			});
 			extractFaceDown.setImplOperatorType(Symbol.Type.GENERATIVE);
@@ -124,7 +124,7 @@ public class ModelExtension {
 			sortByKey.setArity(1);
 			sortByKey.setGenerator(new Symbol.IImplGenerator() {
 				@Override
-				public String generate(Type type, String[] children, String[] childrenSideEffects, String[] sideEffect) {			
+				public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {			
 					String compType = "";
 					String temp_sort="temp_sort";
 					if (type != null) {
@@ -141,7 +141,7 @@ public class ModelExtension {
 					for (String s: childrenSideEffects) {
 						sideEffect[0] += s;
 					}
-					temp_sort=children[0]+".sort(Comparator.comparing("+compType+"::getKey));\n";
+					temp_sort=childrenImpl[0]+".sort(Comparator.comparing("+compType+"::getKey));\n";
 					return temp_sort;
 				}
 			});
