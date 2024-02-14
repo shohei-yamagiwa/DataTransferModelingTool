@@ -45,10 +45,21 @@ public class DataConstraintModel {
 	public static final Symbol length = new Symbol("length", 1, Symbol.Type.PREFIX, "($x)->$x.size()", Symbol.Type.LAMBDA);
 	public static final Symbol get = new Symbol("get", 2, Symbol.Type.PREFIX, "get", Symbol.Type.METHOD);
 	public static final Symbol set = new Symbol("set", 3, Symbol.Type.PREFIX, "set", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
-	public static final Symbol contains = new Symbol("contains", 2, Symbol.Type.PREFIX, "contains", Symbol.Type.METHOD);
+	public static final Symbol contains = new Symbol("contains", 2, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
+		@Override
+		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
+			for (String s: childrenSideEffects) {
+				sideEffect[0] += s;
+			}
+			if (childrenTypes[0] != null && typeMap.isAncestorOf(childrenTypes[0])) {
+				return childrenImpl[0] + "." + "containsKey(" + childrenImpl[1] + ")";
+			}
+			return childrenImpl[0] + "." + "contains(" + childrenImpl[1] + ")";
+		}
+	});
 	public static final Symbol nil = new Symbol("nil", 0, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		@Override
-		public String generate(Type type, String[] children, String[] childrenSideEffects, String[] sideEffect) {
+		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 			String compType = "";
 			if (type != null) {
 				String temp = "temp_nil";
@@ -70,18 +81,18 @@ public class DataConstraintModel {
 	public static final Symbol cond = new Symbol("if", 3, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		final int count[] = {0};
 		@Override
-		public String generate(Type type, String[] children, String[] childrenSideEffects, String[] sideEffect) {
+		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 			String temp = "temp_if" + count[0];
 			String impl = ""; 
 			
 			impl += type.getInterfaceTypeName() + " " + temp + ";\n";
 			if (childrenSideEffects[0] != null && childrenSideEffects[0].length() > 0) impl += childrenSideEffects[0];
-			impl += "if (" + children[0] + ") {\n";
+			impl += "if (" + childrenImpl[0] + ") {\n";
 			if (childrenSideEffects[1] != null && childrenSideEffects[1].length() > 0) impl += "\t" + childrenSideEffects[1];
-			impl += "\t" + temp + " = " + children[1] + ";\n";
+			impl += "\t" + temp + " = " + childrenImpl[1] + ";\n";
 			impl += "} else {\n";
 			if (childrenSideEffects[2] != null && childrenSideEffects[2].length() > 0) impl += "\t" + childrenSideEffects[2];
-			impl += "\t" + temp + " = " + children[2] + ";\n";
+			impl += "\t" + temp + " = " + childrenImpl[2] + ";\n";
 			impl += "}\n";
 			
 			sideEffect[0] += impl;
@@ -106,7 +117,7 @@ public class DataConstraintModel {
 	public static final Symbol false_ = new Symbol("false", 0, Symbol.Type.PREFIX, "false", Symbol.Type.PREFIX);
 	public static final Symbol pair = new Symbol("pair", -1, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		@Override
-		public String generate(Type type, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
+		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 			for (String s: childrenSideEffects) {
 				sideEffect[0] += s;
 			}
@@ -116,7 +127,7 @@ public class DataConstraintModel {
 	});
 	public static final Symbol tuple = new Symbol("tuple", -1, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		@Override
-		public String generate(Type type, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
+		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 			for (String s: childrenSideEffects) {
 				sideEffect[0] += s;
 			}
@@ -137,7 +148,7 @@ public class DataConstraintModel {
 	public static final Symbol lookup = new Symbol("lookup", 2, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		final int count[] = {0};
 		@Override
-		public String generate(Type type, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
+		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 			String temp = "temp_get" + count[0];
 			String impl = childrenSideEffects[0] + childrenSideEffects[1];
 			impl += type.getInterfaceTypeName() + " " + temp + ";\n";
@@ -178,7 +189,7 @@ public class DataConstraintModel {
 		remove.setSignature(new Type[] {typeList, typeList, typeInt});
 		head.setSignature(new Type[] {null, typeList});
 		tail.setSignature(new Type[] {typeList, typeList});
-		contains.setSignature(new Type[] {typeBoolean, typeList, null});
+		contains.setSignature(new Type[] {typeBoolean, null, null});
 		length.setSignature(new Type[] {typeInt, null});
 		get.setSignature(new Type[] {null, typeList, typeInt});
 		set.setSignature(new Type[] {typeList, typeList, typeInt, null});

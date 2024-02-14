@@ -159,14 +159,15 @@ public class Symbol {
 	/**
 	 * Generate the implementation of this symbol
 	 * @param type the type of this symbol
+	 * @param childrenTypes the types of the children expressions
 	 * @param childrenImpl the implementations of the children
 	 * @param childrenSideEffects (input) an array of the side effects of the children
 	 * @param sideEffect (output) an array of the side effect of this symbol
 	 * @return the implementation
 	 */
-	public String generate(models.algebra.Type type, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
+	public String generate(models.algebra.Type type, models.algebra.Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 		if (generator != null) {
-			return generator.generate(type, childrenImpl, childrenSideEffects, sideEffect);
+			return generator.generate(type, childrenTypes, childrenImpl, childrenSideEffects, sideEffect);
 		}
 		return null;
 	}
@@ -228,6 +229,6 @@ public class Symbol {
 		 * @param sideEffect (output) an array of the side effect of this generator
 		 * @return the generated implementation
 		 */
-		public String generate(models.algebra.Type type, String children[], String[] childrenSideEffects, String[] sideEffect);
+		public String generate(models.algebra.Type type, models.algebra.Type[] childrenTypes, String children[], String[] childrenSideEffects, String[] sideEffect);
 	}
 }
