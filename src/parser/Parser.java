@@ -297,17 +297,23 @@ public class Parser {
 							}
 						}
 					} catch (NumberFormatException e) {
-						if (stream.checkNext() != null && stream.checkNext().equals(COLON)) {
-							// when a type is specified.
-							stream.next();
-							String typeName = stream.next();
-							Type type = model.getType(typeName);
-							if (type == null) {
-								type = new Type(typeName, typeName);
-							}
-							exp = new Variable(symbolName, type);							
+						if (symbolName.startsWith("\"") && symbolName.endsWith("\"")) {
+							// a string value
+							exp = new Constant(symbolName, DataTransferModel.typeString);
 						} else {
-							exp = new Variable(symbolName);
+							// a variable
+							if (stream.checkNext() != null && stream.checkNext().equals(COLON)) {
+								// when a type is specified.
+								stream.next();
+								String typeName = stream.next();
+								Type type = model.getType(typeName);
+								if (type == null) {
+									type = new Type(typeName, typeName);
+								}
+								exp = new Variable(symbolName, type);							
+							} else {
+								exp = new Variable(symbolName);
+							}
 						}
 					}
 				}
