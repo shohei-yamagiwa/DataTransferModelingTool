@@ -37,6 +37,16 @@ public class DataConstraintModel {
 	public static final Symbol sub = new Symbol(Parser.SUB, 2, Symbol.Type.INFIX);
 	public static final Symbol div = new Symbol(Parser.DIV, 2, Symbol.Type.INFIX);
 	public static final Symbol minus = new Symbol(Parser.MINUS, 1);
+	public static final Symbol mod = new Symbol(Parser.MOD, 2, Symbol.Type.INFIX, "%", Symbol.Type.INFIX);
+	public static final Symbol eq = new Symbol(Parser.EQ, 2, Symbol.Type.INFIX, "==", Symbol.Type.INFIX);
+	public static final Symbol neq = new Symbol(Parser.NEQ, 2, Symbol.Type.INFIX, "!=", Symbol.Type.INFIX);
+	public static final Symbol gt = new Symbol(Parser.GT, 2, Symbol.Type.INFIX, ">", Symbol.Type.INFIX);
+	public static final Symbol lt = new Symbol(Parser.LT, 2, Symbol.Type.INFIX, "<", Symbol.Type.INFIX);
+	public static final Symbol ge = new Symbol(Parser.GE, 2, Symbol.Type.INFIX, ">=", Symbol.Type.INFIX);
+	public static final Symbol le = new Symbol(Parser.LE, 2, Symbol.Type.INFIX, "<=", Symbol.Type.INFIX);
+	public static final Symbol and = new Symbol(Parser.AND, 2, Symbol.Type.INFIX, "&&", Symbol.Type.INFIX);
+	public static final Symbol or = new Symbol(Parser.OR, 2, Symbol.Type.INFIX, "||", Symbol.Type.INFIX);
+	public static final Symbol neg = new Symbol(Parser.NEG, 1, Symbol.Type.INFIX, "!", Symbol.Type.PREFIX);
 	public static final Symbol cons = new Symbol("cons", 2, Symbol.Type.PREFIX, "($x,$y)->$x.add(0, $y)", Symbol.Type.LAMBDA_WITH_SIDE_EFFECT, new int[] {1, 0});
 	public static final Symbol append = new Symbol("append", 2, Symbol.Type.PREFIX, "add", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
 	public static final Symbol remove = new Symbol("remove", 2, Symbol.Type.PREFIX, "remove", Symbol.Type.METHOD_WITH_SIDE_EFFECT);
@@ -78,6 +88,8 @@ public class DataConstraintModel {
 		}
 	});
 	public static final Symbol null_ = new Symbol("null", 0, Symbol.Type.PREFIX, "null", Symbol.Type.PREFIX);
+	public static final Symbol true_ = new Symbol("true", 0, Symbol.Type.PREFIX, "true", Symbol.Type.PREFIX);
+	public static final Symbol false_ = new Symbol("false", 0, Symbol.Type.PREFIX, "false", Symbol.Type.PREFIX);
 	public static final Symbol cond = new Symbol("if", 3, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		final int count[] = {0};
 		@Override
@@ -100,21 +112,7 @@ public class DataConstraintModel {
 			count[0]++;
 			return temp;
 		}
-	});
-	
-	
-	public static final Symbol mod = new Symbol("mod", 2, Symbol.Type.PREFIX, "%", Symbol.Type.INFIX);
-	public static final Symbol eq = new Symbol("eq", 2, Symbol.Type.PREFIX, "==", Symbol.Type.INFIX);
-	public static final Symbol neq = new Symbol("neq", 2, Symbol.Type.PREFIX, "!=", Symbol.Type.INFIX);
-	public static final Symbol gt = new Symbol("gt", 2, Symbol.Type.PREFIX, ">", Symbol.Type.INFIX);
-	public static final Symbol lt = new Symbol("lt", 2, Symbol.Type.PREFIX, "<", Symbol.Type.INFIX);
-	public static final Symbol ge = new Symbol("ge", 2, Symbol.Type.PREFIX, ">=", Symbol.Type.INFIX);
-	public static final Symbol le = new Symbol("le", 2, Symbol.Type.PREFIX, "<=", Symbol.Type.INFIX);
-	public static final Symbol and = new Symbol("and", 2, Symbol.Type.PREFIX, "&&", Symbol.Type.INFIX);
-	public static final Symbol or = new Symbol("or", 2, Symbol.Type.PREFIX, "||", Symbol.Type.INFIX);
-	public static final Symbol neg = new Symbol("neg", 1, Symbol.Type.PREFIX, "!", Symbol.Type.PREFIX);
-	public static final Symbol true_ = new Symbol("true", 0, Symbol.Type.PREFIX, "true", Symbol.Type.PREFIX);
-	public static final Symbol false_ = new Symbol("false", 0, Symbol.Type.PREFIX, "false", Symbol.Type.PREFIX);
+	});	
 	public static final Symbol pair = new Symbol("pair", -1, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
 		@Override
 		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
@@ -183,6 +181,15 @@ public class DataConstraintModel {
 		div.setInverses(new Symbol[] {mul});
 		minus.setInverses(new Symbol[] {minus});
 		mod.setSignature(new Type[] {typeInt, null, null});
+		eq.setSignature(new Type[] {typeBoolean, null, null});
+		neq.setSignature(new Type[] {typeBoolean, null, null});
+		gt.setSignature(new Type[] {typeBoolean, null, null});
+		lt.setSignature(new Type[] {typeBoolean, null, null});
+		ge.setSignature(new Type[] {typeBoolean, null, null});
+		le.setSignature(new Type[] {typeBoolean, null, null});
+		and.setSignature(new Type[] {typeBoolean, typeBoolean, typeBoolean});
+		or.setSignature(new Type[] {typeBoolean, typeBoolean, typeBoolean});
+		neg.setSignature(new Type[] {typeBoolean, typeBoolean});
 		cons.setInverses(new Symbol[] {head, tail});
 		cons.setSignature(new Type[] {typeList, null, typeList});
 		append.setSignature(new Type[] {typeList, typeList, null});
@@ -193,18 +200,9 @@ public class DataConstraintModel {
 		length.setSignature(new Type[] {typeInt, null});
 		get.setSignature(new Type[] {null, typeList, typeInt});
 		set.setSignature(new Type[] {typeList, typeList, typeInt, null});
-		eq.setSignature(new Type[] {typeBoolean, null, null});
-		neq.setSignature(new Type[] {typeBoolean, null, null});
-		gt.setSignature(new Type[] {typeBoolean, null, null});
-		lt.setSignature(new Type[] {typeBoolean, null, null});
-		ge.setSignature(new Type[] {typeBoolean, null, null});
-		le.setSignature(new Type[] {typeBoolean, null, null});
-		and.setSignature(new Type[] {typeBoolean, typeBoolean, typeBoolean});
-		or.setSignature(new Type[] {typeBoolean, typeBoolean, typeBoolean});
-		neg.setSignature(new Type[] {typeBoolean, typeBoolean});
+		null_.setSignature(new Type[] {null});
 		true_.setSignature(new Type[] {typeBoolean});
 		false_.setSignature(new Type[] {typeBoolean});
-		null_.setSignature(new Type[] {null});
 		pair.setSignature(new Type[] {typePair,null,null});
 		pair.setInverses(new Symbol[] {left, right});
 		left.setSignature(new Type[] {null, typePair});
@@ -260,17 +258,6 @@ public class DataConstraintModel {
 		addSymbol(div);
 		addSymbol(minus);
 		addSymbol(mod);
-		addSymbol(cons);
-		addSymbol(append);
-		addSymbol(remove);
-		addSymbol(head);
-		addSymbol(tail);
-		addSymbol(length);
-		addSymbol(contains);
-		addSymbol(get);
-		addSymbol(set);
-		addSymbol(nil);
-		addSymbol(cond);
 		addSymbol(eq);
 		addSymbol(neq);
 		addSymbol(gt);
@@ -280,9 +267,20 @@ public class DataConstraintModel {
 		addSymbol(and);
 		addSymbol(or);
 		addSymbol(neg);
+		addSymbol(cons);
+		addSymbol(append);
+		addSymbol(remove);
+		addSymbol(head);
+		addSymbol(tail);
+		addSymbol(length);
+		addSymbol(contains);
+		addSymbol(get);
+		addSymbol(set);
+		addSymbol(cond);
+		addSymbol(nil);
+		addSymbol(null_);
 		addSymbol(true_);
 		addSymbol(false_);
-		addSymbol(null_);
 		addSymbol(pair);
 		addSymbol(left);
 		addSymbol(right);

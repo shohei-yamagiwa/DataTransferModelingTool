@@ -105,8 +105,8 @@ public class UpdateCodeGenerationTest {
 		
 		// === c1 ===
 		//
-		// payment(p1, update1(y)) == y
-		// loyalty(l, update1(y)) == floor(y * 0.05)
+		// payment(p1, update1(y)) = y
+		// loyalty(l, update1(y)) = floor(y * 0.05)
 		//
 		DataTransferChannel c1 = new DataTransferChannel("c1");
 		ChannelMember c1_payment = new ChannelMember(payment);
@@ -172,8 +172,8 @@ public class UpdateCodeGenerationTest {
 		
 		// === c2 ===
 		//
-		// payment(p1, update2(z)) == z
-		// history(h, update2(z)) == cons(z, h)
+		// payment(p1, update2(z)) = z
+		// history(h, update2(z)) = cons(z, h)
 		//
 		DataTransferChannel c2 = new DataTransferChannel("c2");
 		ChannelMember c2_payment = new ChannelMember(payment);

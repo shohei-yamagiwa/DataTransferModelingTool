@@ -63,8 +63,8 @@ public class FormulaChannel extends DataTransferChannel {
 		super.addChannelMemberAsOutput(channelMember);
 		if (getOutputChannelMembers().size() == 1) {
 			if (formula == null) formula = "";
-			if (!formula.contains("==")) {
-				formula = channelMember.getResource().getResourceName() + " == " + formula;
+			if (!formula.contains("=")) {
+				formula = channelMember.getResource().getResourceName() + " = " + formula;
 			}
 		}
 		if (formulaRhs != null) {
