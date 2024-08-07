@@ -1,18 +1,18 @@
 model {
 	channel CIO1 {
-	   out min(m: Double, tick) == mod(m + 1, 60)
+		out min(m: Int, tick) = (m + 1) % 60
 	}
 	channel Clock {
-	   in min(m, update(m2)) == m2
-	   out hour(h: Double, update(m2)) == if(eq(m2, 0), mod(h + 1, 24), h)
+		in min(m, update(m2)) = m2
+		out hour(h: Int, update(m2)) = if(m2 == 0, (h + 1) % 24, h)
 	}
 	channel MinUpdate {
-	   in min(m, update(m2)) == m2
-	   out min_ang(m_ang: Double, update(m2)) == mod(m2, 60) / 30 * PI
+		in min(m, update(m2)) = m2
+		out min_ang(m_ang: Double, update(m2)) = m2 / 30 * PI
 	}
 	channel HourUpdate {
-	   in hour(h, update(h2)) == h2
-	   out hour_ang(h_ang: Double, update(h2)) == mod(h2, 12) / 6 * PI
+		in hour(h, update(h2)) = h2
+		out hour_ang(h_ang: Double, update(h2)) = h2 / 6 * PI
 	}
 }
 geometry {

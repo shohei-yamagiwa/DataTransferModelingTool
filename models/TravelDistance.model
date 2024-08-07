@@ -1,13 +1,13 @@
 channel CX {
-	out pos_x(prev_x: Double, setX(cur_x: Double)) == cur_x
+	out pos_x(prev_x: Double, setX(cur_x: Double)) = cur_x
 }
 
 channel CY {
-	out pos_y(prev_y: Double, setY(cur_y: Double)) == cur_y
+	out pos_y(prev_y: Double, setY(cur_y: Double)) = cur_y
 }
 
 channel C {
-	in pos_x(prev_x, move(dx, dy)) == prev_x + dx
-	in pos_y(prev_y, move(dx, dy)) == prev_y + dy
-	out dist(prev_d, move(dx, dy)) == prev_d + sqrt(dx * dx + dy * dy)
+	in pos_x(prev_x, move(dx, dy)) = prev_x + dx
+	in pos_y(prev_y, move(dx, dy)) = prev_y + dy
+	out dist(prev_d, move(dx, dy)) = prev_d + sqrt(dx * dx + dy * dy)
 }

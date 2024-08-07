@@ -1,3 +1,0 @@
-channel cio {
-	 out r1(x1:Int,set(x2:Int)) == x2:Int
-}

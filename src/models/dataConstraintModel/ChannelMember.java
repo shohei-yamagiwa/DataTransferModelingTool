@@ -53,6 +53,6 @@ public class ChannelMember {
 		return resourcePath.getResourceName() + "("
 					+ stateTransition.getCurStateExpression() + ","
 					+ stateTransition.getMessageExpression() + ")"
-					+ " == " + stateTransition.getNextStateExpression();
+					+ " = " + stateTransition.getNextStateExpression();
 	}
 }

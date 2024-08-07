@@ -21,7 +21,7 @@ public class SimplifiedDataFlowModelTest {
 		
 		// === cin ===
 		//
-		// payment(p1, purchase(x)) == x
+		// payment(p1, purchase(x)) = x
 		//
 		DataTransferChannel cin = new DataTransferChannel("cin");
 		ChannelMember cin_payment = new ChannelMember(payment);
@@ -30,8 +30,8 @@ public class SimplifiedDataFlowModelTest {
 		
 		// === c1 ===
 		//
-		// payment(p1, update1(y)) == y
-		// loyalty(l, update1(y)) == floor(y * 0.05)
+		// payment(p1, update1(y)) = y
+		// loyalty(l, update1(y)) = floor(y * 0.05)
 		//
 		DataTransferChannel c1 = new DataTransferChannel("c1");
 		ChannelMember c1_payment = new ChannelMember(payment);
@@ -44,8 +44,8 @@ public class SimplifiedDataFlowModelTest {
 		
 		// === c2 ===
 		//
-		// payment(p1, update2(z)) == z
-		// history(h, update2(z)) == cons(z, h)
+		// payment(p1, update2(z)) = z
+		// history(h, update2(z)) = cons(z, h)
 		//
 		DataTransferChannel c2 = new DataTransferChannel("c2");
 		ChannelMember c2_payment = new ChannelMember(payment);
@@ -58,8 +58,8 @@ public class SimplifiedDataFlowModelTest {
 		
 		// === c3 ===
 		//
-		// history(h, update3(u)) == u
-		// total(t, update3(u)) == sum(u)
+		// history(h, update3(u)) = u
+		// total(t, update3(u)) = sum(u)
 		//
 		DataTransferChannel c3 = new DataTransferChannel("c3");
 		ChannelMember c3_history = new ChannelMember(history);

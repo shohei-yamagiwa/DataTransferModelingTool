@@ -1,6 +1,5 @@
 package parser;
 
-import java.awt.image.DataBufferDouble;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +46,17 @@ public class Parser {
 	public static final String MUL = "*";
 	public static final String SUB = "-";
 	public static final String DIV = "/";
+	public static final String MOD = "%";
 	public static final String MINUS = "-";
+	public static final String EQ = "==";
+	public static final String NEQ = "!=";
+	public static final String GT = ">";
+	public static final String LT = "<";
+	public static final String GE = ">=";
+	public static final String LE = "<=";
+	public static final String AND = "&&";
+	public static final String OR = "||";
+	public static final String NEG = "!";
 	public static final String ADD_REGX = "\\+";
 	public static final String MUL_REGX = "\\*";
 	public static final String SUB_REGX = "\\-";
@@ -55,7 +64,8 @@ public class Parser {
 	public static final String IN = "in";
 	public static final String OUT = "out";
 	public static final String REF = "ref";
-	public static final String EQUALS = "==";
+	public static final String OR_REGX = "\\|\\|";
+	public static final String EQUALS = "=";
 	public static final String ASSIGNMENT = "=";
 	public static final String COMMA = ",";
 	public static final String COLON = ":";
@@ -246,20 +256,23 @@ public class Parser {
 		ArrayList<Symbol> operators = new ArrayList<>();
 		String operator = null;
 		for (;;) {
-			String leftBracketOrMinus = stream.next();
-			if (leftBracketOrMinus.equals(LEFT_BRACKET)) {
+			String leftBracketOrMinusOrNeg = stream.next();
+			if (leftBracketOrMinusOrNeg.equals(LEFT_BRACKET)) {
 				Expression exp = parseTerm(stream, model);
 				String rightBracket = stream.next();
 				if (!rightBracket.equals(RIGHT_BRACKET)) throw new ExpectedRightBracket(stream.getLine());
 				expressions.add(exp);
 			} else {
-				Symbol minus = null;
+				Symbol minusOrNeg = null;
 				String symbolName = null;
-				if (leftBracketOrMinus.equals(MINUS)) {
-					minus = DataTransferModel.minus;		// not sub
+				if (leftBracketOrMinusOrNeg.equals(MINUS)) {
+					minusOrNeg = DataTransferModel.minus;		// not sub
+					symbolName = stream.next();
+				} else if (leftBracketOrMinusOrNeg.equals(NEG)) {
+					minusOrNeg = DataTransferModel.neg;
 					symbolName = stream.next();
 				} else {
-					symbolName = leftBracketOrMinus;
+					symbolName = leftBracketOrMinusOrNeg;
 				}
 				Expression exp = null;
 				if (stream.checkNext() != null && stream.checkNext().equals(LEFT_BRACKET)) {
@@ -317,10 +330,10 @@ public class Parser {
 						}
 					}
 				}
-				if (minus != null) {
-					Term minusTerm = new Term(minus);
-					minusTerm.addChild(exp);
-					expressions.add(minusTerm);
+				if (minusOrNeg != null) {
+					Term minusOrNegTerm = new Term(minusOrNeg);
+					minusOrNegTerm.addChild(exp);
+					expressions.add(minusOrNegTerm);
 				} else {
 					expressions.add(exp);
 				}
@@ -330,16 +343,49 @@ public class Parser {
 				break;
 			} else if (operator.equals(ADD)) {
 				operators.add(DataTransferModel.add);
+				stream.next();
 			} else if (operator.equals(MUL)) {
 				operators.add(DataTransferModel.mul);
+				stream.next();
 			} else if (operator.equals(SUB)) {
 				operators.add(DataTransferModel.sub);	// not minus
+				stream.next();
 			} else if (operator.equals(DIV)) {
 				operators.add(DataTransferModel.div);
+				stream.next();
+			} else if (operator.equals(MOD)) {
+				operators.add(DataTransferModel.mod);
+				stream.next();
+			} else if (operator.equals(EQ)) {
+				operators.add(DataTransferModel.eq);
+				stream.next();
+			} else if (operator.equals(NEQ)) {
+				operators.add(DataTransferModel.neq);
+				stream.next();
+			} else if (operator.equals(GT)) {
+				operators.add(DataTransferModel.gt);
+				stream.next();
+			} else if (operator.equals(LT)) {
+				operators.add(DataTransferModel.lt);
+				stream.next();
+			} else if (operator.equals(GE)) {
+				operators.add(DataTransferModel.ge);
+				stream.next();
+			} else if (operator.equals(LE)) {
+				operators.add(DataTransferModel.le);
+				stream.next();
+			} else if (operator.equals(AND)) {
+				operators.add(DataTransferModel.and);
+				stream.next();
+			} else if (operator.equals(OR)) {
+				operators.add(DataTransferModel.or);
+				stream.next();
+			} else if (operator.equals(NEG)) {
+				operators.add(DataTransferModel.neg);
+				stream.next();
 			} else {
 				break;
 			}
-			stream.next();		// an arithmetic operator
 		}
 		if (expressions.size() == 1) {
 			// no arithmetic operators
@@ -351,7 +397,9 @@ public class Parser {
 		int i = 1;
 		for (Symbol op: operators) {
 			Expression second = expressions.get(i);
-			if (op.getName().equals(MUL) || op.getName().equals(DIV)) {
+			if (op.getName().equals(MUL) || op.getName().equals(DIV) || op.getName().equals(MOD)
+					|| op.getName().equals(EQ) || op.getName().equals(NEQ) || op.getName().equals(GT) || op.getName().equals(LT)
+					|| op.getName().equals(GE) || op.getName().equals(LE) || op.getName().equals(AND) || op.getName().equals(OR)) {
 				Term term = new Term(op);
 				term.addChild(first);
 				term.addChild(second);
@@ -397,7 +445,7 @@ public class Parser {
 	 * "TokenStream" has a token what is read from description of "Architecture Language Model".
 	 */
 	public static class TokenStream {
-		private ArrayList<ArrayList<String>> tokens = new ArrayList<>();
+		private ArrayList<ArrayList<Token>> tokens = new ArrayList<>();
 		private ArrayList<String> lines = new ArrayList<>();
 		private int line = 0;
 		private int n = 0;
@@ -422,15 +470,45 @@ public class Parser {
 																					splitBy(
 																							splitBy(
 																									splitBy(
-																											Arrays.asList(line.split("[ \t]")), 
-																											ADD,
-																											ADD_REGX),
-																									MUL,
-																									MUL_REGX),
-																							SUB,
-																							SUB_REGX),
-																					DIV,
-																					DIV_REGX),
+																											splitBy(
+																													splitBy(
+																															splitBy(
+																																	splitBy(
+																																			splitBy(
+																																					splitBy(
+																																							splitBy(
+																																									splitBy(
+																																											splitBy(
+																																													splitBy(
+																																															line.split("[ \t]"), 
+																																															ADD,
+																																															ADD_REGX),
+																																													MUL,
+																																													MUL_REGX),
+																																											SUB,
+																																											SUB_REGX),
+																																									DIV,
+																																									DIV_REGX),
+																																							MOD,
+																																							MOD),
+																																					EQ,
+																																					EQ),
+																																			NEQ,
+																																			NEQ),
+																																	GE,
+																																	GE),
+																															LE,
+																															LE),
+																													GT,
+																													GT),
+																											LT,
+																											LT),
+																									AND,
+																									AND),
+																							OR,
+																							OR_REGX),
+																					NEG,
+																					NEG),
 																			COMMA, 
 																			COMMA),
 																	COLON, 
@@ -447,23 +525,35 @@ public class Parser {
 							RIGHT_CURLY_BRACKET_REGX));
 		}
 
-		private ArrayList<String> splitBy(final List<String> tokens, final String delimiter, final String delimiterRegx) {
-			ArrayList<String> newTokens = new ArrayList<>();
+		private ArrayList<Token> splitBy(String[] tokens, final String delimiter, final String delimiterRegx) {
+			ArrayList<Token> newTokens = new ArrayList<>();
 			for (String token: tokens) {
-				String[] splitTokens = token.split(delimiterRegx);
-				boolean fFirstToken = true;
-				for (String t: splitTokens) {
-					if (!fFirstToken) {
-						newTokens.add(delimiter);
+				newTokens.add(new Token(token));
+			}
+			return splitBy(newTokens, delimiter, delimiterRegx);
+		}
+ 
+		private ArrayList<Token> splitBy(final List<Token> tokens, final String delimiter, final String delimiterRegx) {
+			ArrayList<Token> newTokens = new ArrayList<>();
+			for (Token token: tokens) {
+				if (token.isAtomic()) {
+					newTokens.add(token);
+				} else {
+					String[] splitTokens = token.split(delimiterRegx);
+					boolean fFirstToken = true;
+					for (String t: splitTokens) {
+						if (!fFirstToken) {
+							newTokens.add(new Token(delimiter, true));
+						}
+						if (t.length() > 0) {
+							newTokens.add(new Token(t));
+						}
+						fFirstToken = false;
 					}
-					if (t.length() > 0) {
-						newTokens.add(t);
+					while (token.endsWith(delimiter)) {
+						newTokens.add(new Token(delimiter, true));
+						token = token.substring(0, token.length() - 1);
 					}
-					fFirstToken = false;
-				}
-				while (token.endsWith(delimiter)) {
-					newTokens.add(delimiter);
-					token = token.substring(0, token.length() - 1);
 				}
 			}
 			return newTokens;
@@ -476,7 +566,7 @@ public class Parser {
 				n = 0;
 				if (line >= tokens.size()) return null;
 			}
-			String token = tokens.get(line).get(n);
+			String token = tokens.get(line).get(n).getTokenStr();
 			n++;
 			return token;
 		}
@@ -488,7 +578,7 @@ public class Parser {
 				n = 0;
 				if (line >= tokens.size()) return null;
 			}
-			return tokens.get(line).get(n);
+			return tokens.get(line).get(n).getTokenStr();
 		}
 
 		public boolean hasNext() {
@@ -511,6 +601,44 @@ public class Parser {
 				text += lines.get(l) + "\n";
 			}
 			return text;
+		}
+	}
+	
+	public static class Token {
+		String token;
+		boolean isAtomic = false;
+		
+		public Token(String token) {
+			this.token = token;
+		}
+	
+		public Token(String token, boolean isAtomic) {
+			this.token = token;
+			this.isAtomic = isAtomic;
+		}
+		
+		public String getTokenStr() {
+			return token;
+		}
+		
+		public boolean isAtomic() {
+			return isAtomic;
+		}
+		
+		public String[] split(String delimiterRegx) {
+			return token.split(delimiterRegx);
+		}
+	
+		public boolean endsWith(String delimiter) {
+			return token.endsWith(delimiter);
+		}
+	
+		public int length() {
+			return token.length();
+		}
+	
+		public Token substring(int beginIdx, int endIdx) {
+			return new Token(token.substring(beginIdx, endIdx));
 		}
 	}
 }
