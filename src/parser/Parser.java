@@ -380,9 +380,6 @@ public class Parser {
 			} else if (operator.equals(OR)) {
 				operators.add(DataTransferModel.or);
 				stream.next();
-			} else if (operator.equals(NEG)) {
-				operators.add(DataTransferModel.neg);
-				stream.next();
 			} else {
 				break;
 			}
@@ -395,15 +392,40 @@ public class Parser {
 		ArrayList<Symbol> addSubs = new ArrayList<>();
 		Expression first = expressions.get(0);
 		int i = 1;
+		Term rootTerm = null;
 		for (Symbol op: operators) {
 			Expression second = expressions.get(i);
-			if (op.getName().equals(MUL) || op.getName().equals(DIV) || op.getName().equals(MOD)
-					|| op.getName().equals(EQ) || op.getName().equals(NEQ) || op.getName().equals(GT) || op.getName().equals(LT)
-					|| op.getName().equals(GE) || op.getName().equals(LE) || op.getName().equals(AND) || op.getName().equals(OR)) {
+			if (op.getName().equals(MUL) || op.getName().equals(DIV) || op.getName().equals(MOD)) {
+				// higher priority than add and sub
 				Term term = new Term(op);
 				term.addChild(first);
 				term.addChild(second);
 				first = term;
+			} else if (op.getName().equals(EQ) || op.getName().equals(NEQ) || op.getName().equals(GT) || op.getName().equals(LT)
+					|| op.getName().equals(GE) || op.getName().equals(LE) || op.getName().equals(AND) || op.getName().equals(OR)) {
+				// lower priority than add and sub
+				if (first != null) monomials.add(first);
+				Expression firstMonomial = monomials.get(0);
+				i = 1;
+				for (Symbol op2: addSubs) {
+					Expression secondMonomial = monomials.get(i);
+					Term term = new Term(op2);
+					term.addChild(firstMonomial);
+					term.addChild(secondMonomial);
+					firstMonomial = term;
+					i++;
+				}
+				if (rootTerm == null) {
+					rootTerm = new Term(op);
+					rootTerm.addChild(firstMonomial);
+				} else {
+					rootTerm.addChild(firstMonomial);
+					firstMonomial = rootTerm;
+					rootTerm = new Term(op);
+					rootTerm.addChild(firstMonomial);
+				}
+				monomials.clear();
+				addSubs.clear();
 			} else {
 				// add or sub ==> new monomial
 				monomials.add(first);
@@ -423,7 +445,12 @@ public class Parser {
 			firstMonomial = term;
 			i++;
 		}
-		return firstMonomial;
+		if (rootTerm == null) {
+			return firstMonomial;
+		} else {
+			rootTerm.addChild(firstMonomial);
+			return rootTerm;
+		}
 	}
 
 	/**--------------------------------------------------------------------------------
