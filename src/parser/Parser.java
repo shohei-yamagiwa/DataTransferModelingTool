@@ -17,6 +17,7 @@ import models.dataConstraintModel.ResourcePath;
 import models.dataConstraintModel.StateTransition;
 import models.dataFlowModel.DataTransferModel;
 import models.dataFlowModel.DataTransferChannel;
+import parser.Parser.Token;
 import parser.exceptions.ExpectedAssignment;
 import parser.exceptions.ExpectedChannel;
 import parser.exceptions.ExpectedChannelName;
@@ -69,7 +70,7 @@ public class Parser {
 	public static final String ASSIGNMENT = "=";
 	public static final String COMMA = ",";
 	public static final String COLON = ":";
-
+	public static final String DOUBLE_QUOT = "\"";
 
 	public Parser(final TokenStream stream) {
 		this.stream = stream;
@@ -485,81 +486,31 @@ public class Parser {
 		public void addLine(String line) {
 			lines.add(line);
 			line = line.trim();
-			tokens.add(
-					splitBy(
-							splitBy(
-									splitBy(
-											splitBy(
-													splitBy(
-															splitBy(
-																	splitBy(
-																			splitBy(
-																					splitBy(
-																							splitBy(
-																									splitBy(
-																											splitBy(
-																													splitBy(
-																															splitBy(
-																																	splitBy(
-																																			splitBy(
-																																					splitBy(
-																																							splitBy(
-																																									splitBy(
-																																											splitBy(
-																																													splitBy(
-																																															line.split("[ \t]"), 
-																																															ADD,
-																																															ADD_REGX),
-																																													MUL,
-																																													MUL_REGX),
-																																											SUB,
-																																											SUB_REGX),
-																																									DIV,
-																																									DIV_REGX),
-																																							MOD,
-																																							MOD),
-																																					EQ,
-																																					EQ),
-																																			NEQ,
-																																			NEQ),
-																																	GE,
-																																	GE),
-																															LE,
-																															LE),
-																													GT,
-																													GT),
-																											LT,
-																											LT),
-																									AND,
-																									AND),
-																							OR,
-																							OR_REGX),
-																					NEG,
-																					NEG),
-																			COMMA, 
-																			COMMA),
-																	COLON, 
-																	COLON),
-															LEFT_BRACKET, 
-															LEFT_BRACKET_REGX),
-													RIGHT_BRACKET,
-													RIGHT_BRACKET_REGX),
-											EQUALS,
-											EQUALS),
-									LEFT_CURLY_BRACKET,
-									LEFT_CURLY_BRACKET_REGX),
-							RIGHT_CURLY_BRACKET,
-							RIGHT_CURLY_BRACKET_REGX));
+			ArrayList<Token> tokenList = splitByDoubleQuotation(line);
+			tokenList = splitBy(tokenList, ADD, ADD_REGX);
+			tokenList = splitBy(tokenList, MUL, MUL_REGX);
+			tokenList = splitBy(tokenList, SUB, SUB_REGX);
+			tokenList = splitBy(tokenList, DIV, DIV_REGX);
+			tokenList = splitBy(tokenList, MOD, MOD);
+			tokenList = splitBy(tokenList, EQ, EQ);
+			tokenList = splitBy(tokenList, NEQ,NEQ);
+			tokenList = splitBy(tokenList, GE, GE);
+			tokenList = splitBy(tokenList, LE, LE);
+			tokenList = splitBy(tokenList, GT, GT);
+			tokenList = splitBy(tokenList, LT, LT);
+			tokenList = splitBy(tokenList, AND, AND);
+			tokenList = splitBy(tokenList, OR, OR_REGX);
+			tokenList = splitBy(tokenList, NEG, NEG);
+			tokenList = splitBy(tokenList, COMMA, COMMA);
+			tokenList = splitBy(tokenList, COLON, COLON);
+			tokenList = splitBy(tokenList, LEFT_BRACKET, LEFT_BRACKET_REGX);
+			tokenList = splitBy(tokenList, RIGHT_BRACKET, RIGHT_BRACKET_REGX);
+			tokenList = splitBy(tokenList, EQUALS, EQUALS);
+			tokenList = splitBy(tokenList, LEFT_CURLY_BRACKET, LEFT_CURLY_BRACKET_REGX);
+			tokenList = splitBy(tokenList, RIGHT_CURLY_BRACKET, RIGHT_CURLY_BRACKET_REGX);
+			tokens.add(tokenList);
 		}
 
-		private ArrayList<Token> splitBy(String[] tokens, final String delimiter, final String delimiterRegx) {
-			ArrayList<Token> newTokens = new ArrayList<>();
-			for (String token: tokens) {
-				newTokens.add(new Token(token));
-			}
-			return splitBy(newTokens, delimiter, delimiterRegx);
-		}
- 
 		private ArrayList<Token> splitBy(final List<Token> tokens, final String delimiter, final String delimiterRegx) {
 			ArrayList<Token> newTokens = new ArrayList<>();
 			for (Token token: tokens) {
@@ -582,6 +533,33 @@ public class Parser {
 						token = token.substring(0, token.length() - 1);
 					}
 				}
+			}
+			return newTokens;
+		}
+		
+		private ArrayList<Token> splitByDoubleQuotation(String line) {
+			ArrayList<Token> newTokens = new ArrayList<>();
+			String[] tokens = line.split(DOUBLE_QUOT);
+			boolean fFirstToken = true;
+			for (int i = 0; i < tokens.length; i++) {
+				String token = tokens[i];
+				if (!fFirstToken) {
+					newTokens.add(new Token(DOUBLE_QUOT, true));
+				}
+				if (!fFirstToken || token.length() > 0) {
+					if (i % 2 == 0) {
+						for (String t: token.split("[ \t]")) {
+							newTokens.add(new Token(t));
+						}
+					} else {
+						// string literal
+						newTokens.add(new Token(token, true));
+					}
+				}
+				fFirstToken = false;
+			}
+			if (line.endsWith(DOUBLE_QUOT)) {
+				newTokens.add(new Token(DOUBLE_QUOT, true));
 			}
 			return newTokens;
 		}
